@@ -10,7 +10,8 @@ import ManageTrainers from "../OwnerDashboardpages/ManageTrainer";
 import ManagePayments from "../OwnerDashboardpages/ManagePayments";
 import ManagePlans from "../OwnerDashboardpages/ManagePlans";
 import Reports from "../OwnerDashboardpages/Reports";
-import Settings from "../OwnerDashboardpages/Settings";
+
+import SettingsPage from "./SettingPage";
 
 export default function OwnerDashboard() {
   return (
@@ -26,7 +27,7 @@ export default function OwnerDashboard() {
           <Route path="manage-payments" element={<ManagePayments />} />
           <Route path="manage-plans" element={<ManagePlans />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<SettingsPage role="owner" />} />
 
           {/* Default */}
 

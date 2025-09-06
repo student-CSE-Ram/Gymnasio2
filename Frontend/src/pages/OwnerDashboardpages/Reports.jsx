@@ -7,8 +7,8 @@ import RevenueChart from '../../components/Charts/RevenueLines'
 export default function Reports() {
   return (
     <div className='flex flex-col gap-8'>
-        <MembersPlanChart />
         <RevenueChart />
+        <MembersPlanChart />
         <RecentPaymentsTable />
     </div>
   )

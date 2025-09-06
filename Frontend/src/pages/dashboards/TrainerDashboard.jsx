@@ -5,7 +5,7 @@ import Overview from '../TrainerDashboardPages/Overview'
 import MyMembers from '../TrainerDashboardPages/MyMembers'
 import Schedule from '../TrainerDashboardPages/Schedule'
 import Reports from '../TrainerDashboardPages/Reports'
-import Settings from '../TrainerDashboardPages/Settings'
+import SettingsPage from './SettingPage';
 
 export default function TrainerDashboard() {
   return (
@@ -19,7 +19,7 @@ export default function TrainerDashboard() {
           <Route path="my-members" element={<MyMembers />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<SettingsPage />} />
 
 
           {/* Default */}
