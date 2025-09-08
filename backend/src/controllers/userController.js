@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-exports.createMember=async(req,res)=>{
+exports.createMember=async(req,res,role)=>{
     try {
         const {name,email,password} = req.body;
 
@@ -22,17 +22,22 @@ exports.createMember=async(req,res)=>{
         });
          await newMember.save();
            
-         return res.status(201).json({msg:"User Created Sucessfully",
-            Id : newMember._id
+         return res.status(201).json({msg:`${role} Created Sucessfully`,
+          user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+            },
          })
 
     } catch (error) {
-        console.log("The user can not be created",error);
+        console.log(`The ${role} can not be created`,error);
         res.status(500).json({msg:"Internal server error"})
     }
 }
 
-exports.createTrainer=async(req,res)=>{
+exports.createTrainer=async(req,res,role)=>{
     try {
         const {name,email,password} = req.body;
 
@@ -53,11 +58,16 @@ exports.createTrainer=async(req,res)=>{
          await newTrainer.save();
            
          return res.status(201).json({msg:"Trainer Created Sucessfully",
-            Id : newTrainer._id
+          user: {
+            id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+             },
          })
 
     } catch (error) {
-        console.log("The trainer can not be created",error);
+        console.log(`The ${role} can not be created `,error);
         res.status(500).json({msg:"Internal server error"})
     }
 }

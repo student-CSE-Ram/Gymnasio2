@@ -1,1 +1,9 @@
- kfjnreh fie fjen ifwemfouy femf oiewr87 bkdc9 r
+// Check if user has a specific role
+exports.roleMiddleware = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ msg: "Access denied: insufficient role" });
+    }
+    next();
+  };
+};
