@@ -1,8 +1,12 @@
-const express = require('express')
+const express = require('express');
+const connectDB = require('./src/config/db');
+const seedOwner = require("./src/config/seedOwner");
 const app = express();
 const PORT = process.env.PORT || 5000;
 require('dotenv').config();
 app.use(express.json());
+
+connectDB().then(seedOwner);
 
 app.get('/' ,(req,res) =>{
     console.log("hello there!");
