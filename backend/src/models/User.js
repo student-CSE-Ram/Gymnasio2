@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       default: "member",
     },
     profileImage: {
-      type: String, // file path for multer uploads
+      type: String,
       default: "",
     },
   },

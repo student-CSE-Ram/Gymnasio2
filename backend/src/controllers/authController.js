@@ -9,19 +9,16 @@ const generateToken = (user) => {
       role: user.role,
       email: user.email,
     },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" } // token valid for 7 days
+    process.env.jwtsecretkey,
+    { expiresIn: "5h" } 
   );
 };
 
-// @desc    Login user (owner, trainer, member)
-// @route   POST /api/auth/login
-// @access  Public
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
@@ -34,7 +31,7 @@ exports.login = async (req, res) => {
     }
 
     // 3. Generate JWT
-    const token = generateToken(user);
+    const token = await generateToken(user);
 
     return res.json({
       msg: "Login successful",

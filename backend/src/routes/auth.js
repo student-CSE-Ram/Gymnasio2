@@ -1,1 +1,11 @@
-  fn fkemf k  dfkf ien fef iuenf ddm fn3f screen,s
+const express = require("express");
+const router = express.Router();
+const {login } = require("../controllers/authController");
+
+
+
+
+router.post("/login", login);
+
+
+module.exports = router;
