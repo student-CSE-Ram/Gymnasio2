@@ -17,7 +17,7 @@ const planSchema = new mongoose.Schema({
         required: true
     },
     features: {
-        type: [String],   // ✅ array of strings
+        type: [String],   // array of strings
         required: true
     },
     createdAt: {

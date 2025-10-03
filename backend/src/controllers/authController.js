@@ -15,11 +15,11 @@ const generateToken = (user) => {
 };
 
 
-exports.login = async (req, res) => {
+exports.Ownerlogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password,role } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.find({ email,role :"owner" });
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
@@ -31,9 +31,9 @@ exports.login = async (req, res) => {
     }
 
     // 3. Generate JWT
-    const token = await generateToken(user);
+    const token =  generateToken(user);
 
-    return res.json({
+    return res.status(200).json({
       msg: "Login successful",
       token,
       user: {
@@ -48,3 +48,34 @@ exports.login = async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+exports.userLogin = async (req,res) =>{
+  try {
+    const {email ,password} = req.body;
+
+    const user = await User.findOne({email});
+
+    if (!user) {
+      return res.status(404).json({msg: "User not found"});
+    }
+
+    const isMatch = await bcrypt.compare(password,user.password);
+
+    if (!isMatch) {
+      return res.status(403).json({msg:"Invalid credentials"})
+    }
+
+    const token = generateToken(user);
+
+    return res.status(200).json({
+      msg:"Login successful",
+      token,
+      name:user.name,
+      email:user.email,
+      role:user.role
+    })
+  } catch (error) {
+    console.error("Error logging in",error);
+    return res.status(500).json({msg:"Cannot logged in, Internal server error."})
+  }
+}
