@@ -27,6 +27,7 @@ export default function OwnerDashboard() {
           <Route path="manage-payments" element={<ManagePayments />} />
           <Route path="manage-plans" element={<ManagePlans />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="attendance" element={<Attendance user={{role:"owner"}} />} />
           <Route path="settings" element={<SettingsPage role="owner" />} />
 
           {/* Default */}

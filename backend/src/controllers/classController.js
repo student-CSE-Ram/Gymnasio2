@@ -106,7 +106,7 @@ exports.getAllClasses = async (req, res) => {
 
 exports.bookClass = async (req, res) => {
   try {
-    const { classId } = req.body;
+    const { classId } = req.params;
     const classObj = await Class.findById(classId);
 
     if (!classObj) return res.status(404).json({ msg: "Class not found" });

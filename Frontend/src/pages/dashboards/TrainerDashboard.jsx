@@ -19,6 +19,7 @@ export default function TrainerDashboard() {
           <Route path="my-members" element={<MyMembers />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="attendance" element={<Attendance user={{role:"trainer"}} />} />
           <Route path="settings" element={<SettingsPage />} />
 
 

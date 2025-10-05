@@ -1,9 +1,18 @@
  const Membership = require('../models/Membership')
  const Plan = require('../models/Plan');
+ const User = require('../models/User');
 
  exports.createMembership = async (req,res) =>{
     try {
-        const {planId, userId} = req.body;
+        const {planId, userId,username} = req.body;
+
+        const user = await User.findById(userId);
+        if(!user){
+            return res.status(404).json({msg:"User not found"})
+        }
+        if (user.name !== username) {
+            return res.status(400).json({msg:"Username does not match the userid"})
+        }
 
         const  plan = await Plan.findById(planId);
         if (!plan) {
@@ -17,6 +26,7 @@
     const membership = new Membership({
       user: userId,
       plan: planId,
+      username:username,
       endDate
     });
     await membership.save();

@@ -18,10 +18,7 @@ app.use('/api/owner',userroutes);
 app.use('/api/plan',planRoutes)
 app.use('/api/membership',membershipRoute)
 
-app.get('/' ,(req,res) =>{
-    console.log("hello there!");
-    res.send("Hello there again!")
-})
+
 
 app.listen(PORT,()=>{
     console.log(`Server is running on the port ${PORT}`);

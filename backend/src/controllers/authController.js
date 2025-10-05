@@ -17,21 +17,18 @@ const generateToken = (user) => {
 
 exports.Ownerlogin = async (req, res) => {
   try {
-    const { email, password,role } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.find({ email,role :"owner" });
-    if (!user) {
-      return res.status(400).json({ msg: "Invalid credentials" });
-    }
+    // Find owner
+    const user = await User.findOne({ email, role: "owner" });
+    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
-    // 2. Compare password
+    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid credentials" });
-    }
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-    // 3. Generate JWT
-    const token =  generateToken(user);
+    // Generate JWT
+    const token = generateToken(user);
 
     return res.status(200).json({
       msg: "Login successful",
@@ -48,6 +45,7 @@ exports.Ownerlogin = async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 };
+
 
 exports.userLogin = async (req,res) =>{
   try {

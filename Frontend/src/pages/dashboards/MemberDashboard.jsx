@@ -5,6 +5,7 @@ import Progress from '../MemberDashboardPages/Progress'
 import MyPlans from '../MemberDashboardPages/MyPlans'
 import Payments from '../MemberDashboardPages/Payments'
 import SettingsPage from './SettingPage'
+import AttendancePage from './Attendance'
 
 export default function MemberDashboard() {
   return (
@@ -16,6 +17,7 @@ export default function MemberDashboard() {
       <Routes>
         <Route path="overview" element={<Overview />} />
         <Route path="progress" element={<Progress />} />
+        <Route path='attendance' element={<AttendancePage />} />
         <Route path="plan" element={<MyPlans />} />
         <Route path="payments" element={<Payments />} />
         <Route path="settings" element={<SettingsPage role='member' />} />

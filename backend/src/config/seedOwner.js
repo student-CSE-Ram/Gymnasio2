@@ -1,33 +1,30 @@
-// const mongoose = require('mongoose');
+require('dotenv').config();
+const User = require('../models/User');
+const connectDB = require('./db');
 
-// require('dotenv').config();
+const seedOwner = async () => {
+  try {
+    await connectDB();
 
-// const User = require('../models/User');
+    // Delete old owner if exists
+    await User.deleteOne({ role: "owner" });
 
-// const seedOwner = async () =>{
-//     try {
+    // Create owner with plain password
+    const owner = new User({
+      name: "Nitesh",
+      email: "muskd89@gmail.com",
+      password: "DonaldMusk89@", // plain password
+      role: "owner",
+    });
 
-//         const existingOwner = await User.findOne({role: "owner"});
+    await owner.save(); // pre('save') will hash the password automatically
 
-//         if (existingOwner) {
-//             console.log("Owner already exists ",existingOwner.email);
-//             process.exit(0);
-//         }
-//         const hashedPassword = await bcrypt.hash('DonaldMusk89@',10)
-//         const owner = new User({
-//             name: "Nitesh",
-//             email: "muskd89@gmail.com",
-//             password: hashedPassword,
-//             role: "owner"
-//         })
+    console.log("✅ Owner created:", owner.email);
+    process.exit(0);
+  } catch (error) {
+    console.log("❌ Error creating owner:", error);
+    process.exit(1);
+  }
+};
 
-//         await owner.save();
-//         console.log("Owner created", owner.email);
-//         process.exit(0);
-//     } catch (error) {
-//         console.log("Error creating owner" ,error.message);
-//         process.exit(1)
-//     }
-// }
-
-// seedOwner();
+seedOwner();

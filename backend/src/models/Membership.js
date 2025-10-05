@@ -11,6 +11,10 @@ const membershipSchema = new mongoose.Schema({
     ref: "Plan",
     required: true
   },
+  username:{
+    type:String,
+    required:true
+  },
   startDate: {
     type: Date,
     default: Date.now

@@ -12,12 +12,12 @@ exports.createMember=async(req,res)=>{
             return res.status(400).json({msg:"User already exist"})
         }
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        // const hashedPassword = await bcrypt.hash(password,10);
 
         const newMember = new User({
             name: name,
             email:email,
-            password:hashedPassword,
+            password:password,
             role:"member"
         });
          await newMember.save();
@@ -57,12 +57,12 @@ exports.createTrainer=async(req,res)=>{
             return res.status(400).json({msg:"Trainer already exist"})
         }
 
-        const hashedPassword = await bcrypt.hash(password,10);
+        // const hashedPassword = await bcrypt.hash(password,10);
 
         const newTrainer = new User({
             name: name,
             email:email,
-            password:hashedPassword,
+            password:password,
             role:"trainer"
         });
          await newTrainer.save();
