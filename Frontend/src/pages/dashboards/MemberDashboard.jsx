@@ -17,7 +17,7 @@ export default function MemberDashboard() {
       <Routes>
         <Route path="overview" element={<Overview />} />
         <Route path="progress" element={<Progress />} />
-        <Route path='attendance' element={<AttendancePage />} />
+        <Route path='attendance' element={<AttendancePage user={{ role: "member" }}/>} />
         <Route path="plan" element={<MyPlans />} />
         <Route path="payments" element={<Payments />} />
         <Route path="settings" element={<SettingsPage role='member' />} />

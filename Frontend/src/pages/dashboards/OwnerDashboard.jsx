@@ -12,6 +12,7 @@ import ManagePlans from "../OwnerDashboardpages/ManagePlans";
 import Reports from "../OwnerDashboardpages/Reports";
 
 import SettingsPage from "./SettingPage";
+import AttendancePage from "./Attendance";
 
 export default function OwnerDashboard() {
   return (
@@ -27,7 +28,7 @@ export default function OwnerDashboard() {
           <Route path="manage-payments" element={<ManagePayments />} />
           <Route path="manage-plans" element={<ManagePlans />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="attendance" element={<Attendance user={{role:"owner"}} />} />
+          <Route path="attendance" element={<AttendancePage user={{role:"owner"}} />} />
           <Route path="settings" element={<SettingsPage role="owner" />} />
 
           {/* Default */}

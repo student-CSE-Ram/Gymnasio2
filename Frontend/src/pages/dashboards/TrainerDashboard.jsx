@@ -6,6 +6,7 @@ import MyMembers from '../TrainerDashboardPages/MyMembers'
 import Schedule from '../TrainerDashboardPages/Schedule'
 import Reports from '../TrainerDashboardPages/Reports'
 import SettingsPage from './SettingPage';
+import AttendancePage from './Attendance';
 
 export default function TrainerDashboard() {
   return (
@@ -19,7 +20,7 @@ export default function TrainerDashboard() {
           <Route path="my-members" element={<MyMembers />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="attendance" element={<Attendance user={{role:"trainer"}} />} />
+          <Route path="attendance" element={<AttendancePage user={{role:"trainer"}} />} />
           <Route path="settings" element={<SettingsPage />} />
 
 

@@ -2,32 +2,27 @@ const Class = require("../models/Class");
 
 exports.createClass = async (req, res) => {
   try {
-    const { name, dateTime, duration, maxMembers, description } = req.body;
+    const { name, trainer, date, time, duration, description } = req.body;
+    const trainerDoc = await User.findById(trainer);
 
-    const trainerId = req.user._id;
+    if (!trainerDoc) return res.status(404).json({ msg: 'Trainer not found' });
 
-    const existingClass = await Class.findOne({ name });
-    if (existingClass) {
-      return res.status(400).json({ msg: "Class already exist" });
-    }
+    const dateTime = new Date(`${date}T${time}`);
 
     const newClass = new Class({
       name,
+      trainer,
+      trainerName: trainerDoc.name,
       dateTime,
       duration,
-      maxMembers,
       description,
-      trainer: trainerId,
     });
 
     await newClass.save();
-
-    return res
-      .status(201)
-      .json({ msg: "Class created successfully", class: newClass });
+    res.status(201).json({ msg: 'Class created successfully', class: newClass });
   } catch (error) {
-    console.error("Error creating class,Internal server error");
-    return res.status(500).json({ msg: "Cannot create the class" });
+    console.error('Error creating class:', error);
+    res.status(500).json({ msg: 'Server Error' });
   }
 };
 

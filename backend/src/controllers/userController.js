@@ -77,7 +77,7 @@ exports.createTrainer=async(req,res)=>{
          })
 
     } catch (error) {
-        console.log(`The ${role} can not be created `,error);
+        console.log(`The trainer can not be created `,error);
         res.status(500).json({msg:"Internal server error"})
     }
 }
