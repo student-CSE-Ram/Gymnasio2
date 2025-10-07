@@ -8,6 +8,7 @@ const {
   getAllClasses,
   bookClass
 } = require("../controllers/classController");
+const Class = require('../models/Class')
 
 const router = express.Router();
 
@@ -25,5 +26,19 @@ router.get("/all", authMiddleware, getAllClasses);
 
 // Book a class → Member can book
 router.post("/book/:classId", authMiddleware, roleMiddleware("member"), bookClass);
+
+// get the class -> member can see his booked classes
+
+router.get('/my-classes', authMiddleware, async (req, res) => {
+  try {
+    const classes = await Class.find({ bookedMembers: req.user._id })
+      .populate('trainer', 'name') // shows trainer name
+      .select('name dateTime duration trainer'); // limit the fields
+    res.status(200).json(classes);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching classes', error });
+  }
+});
+
 
 module.exports = router;
