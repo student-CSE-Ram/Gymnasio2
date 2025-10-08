@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GymnasioLogo from "/GymnasioBlackLogo.png"; 
+import { ownerLogin } from "../../api/authApi";
 
 export default function OwnerLogin() {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -10,17 +12,31 @@ export default function OwnerLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    if (!formData.email || !formData.password) {
-      alert("Please fill all the fields");
-      return;
-    }
+  if (!formData.email || !formData.password) {
+    alert("Please fill all the fields");
+    return;
+  }
 
-    console.log("Owner wants to login");
+  try {
+    const data = await ownerLogin(formData);
+
+    // Save token + role in local storage
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.user.role);
+    localStorage.setItem("userId", data.user._id);
+
+    alert("Login successful!");
     navigate("/owner-dashboard");
-  };
+  } catch (err) {
+    console.error("Login failed:", err);
+    alert(err.response?.data?.msg || "Invalid credentials");
+  }
+};
+
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black">
@@ -89,9 +105,10 @@ export default function OwnerLogin() {
             {/* Button */}
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-lg transform hover:scale-[1.03] transition duration-300"
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
