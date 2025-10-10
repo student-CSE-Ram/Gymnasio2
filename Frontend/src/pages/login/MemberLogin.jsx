@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function MemberLogin() {
+  const [loading,setLoading] = useState(false)
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -11,12 +12,17 @@ export default function MemberLogin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setLoading(true)
     if (!formData.email || !formData.password) {
       alert("Please fill all the fields");
       return;
     }
 
+    try {
+      
+    } catch (error) {
+      
+    }
     console.log("Member wants to login");
     navigate("/member-dashboard");
   };

@@ -21,7 +21,7 @@ app.use(cors({
 }))
 
 app.use('/api/auth',authUser);
-app.use('/api/owner',userroutes);
+app.use('/api/ownerwork',userroutes);
 
 app.use('/api/plan',planRoutes)
 app.use('/api/membership',membershipRoute)

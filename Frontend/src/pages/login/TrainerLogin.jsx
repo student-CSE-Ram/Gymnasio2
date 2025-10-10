@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GymnasioLogo from '/GymnasioBlackLogo.png'
+import { trainerLogin } from "../../api/authApi";
 
 export default function TrainerLogin() {
   const [loading,setLoading] = useState(false);
@@ -11,7 +12,7 @@ export default function TrainerLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     if (!formData.email || !formData.password) {
@@ -19,8 +20,20 @@ export default function TrainerLogin() {
       return;
     }
 
-    console.log("Trainer wants to login");
-    navigate("/trainer-dashboard");
+    try {
+        const data = await trainerLogin(formData);
+    
+        // Save token + role in local storage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("userId", data.user._id);
+    
+        alert("Login successful!");
+        navigate("/trainer-dashboard");
+      } catch (err) {
+        console.error("Login failed:", err);
+        alert(err.response?.data?.msg || "Invalid credentials");
+      }
   };
 
   return (
@@ -82,9 +95,10 @@ export default function TrainerLogin() {
           {/* Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full py-2.5 bg-indigo-500 hover:bg-indigo-600 transition-all duration-300 text-white font-semibold rounded-lg shadow-md"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
