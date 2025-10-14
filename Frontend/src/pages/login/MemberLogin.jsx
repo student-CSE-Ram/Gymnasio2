@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { userLogin } from "../../api/authApi"; // <-- Make sure this API exists
 
 export default function MemberLogin() {
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(null); // "success" | "error" | null
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -10,29 +12,54 @@ export default function MemberLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
+    setStatus(null);
+
     if (!formData.email || !formData.password) {
-      alert("Please fill all the fields");
-      return;
+      setLoading(false);
+      setStatus("error");
+      return alert("Please fill all the fields");
     }
 
     try {
-      
-    } catch (error) {
-      
+      const data = await userLogin(formData); // <-- call your member login API
+
+      // Save token + role in local storage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("userId", data.user._id);
+
+      setStatus("success");
+
+      // Navigate after success animation
+      setTimeout(() => {
+        navigate("/member-dashboard");
+      }, 1200);
+    } catch (err) {
+      console.error("Login failed:", err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
     }
-    console.log("Member wants to login");
-    navigate("/member-dashboard");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800">
-      <div className="bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20 animate-fadeIn">
+      <div
+        className={`bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-full max-w-md border border-white/20 transition-all duration-500 ${
+          status === "success"
+            ? "border-green-500 shadow-green-400/40 scale-[1.03]"
+            : status === "error"
+            ? "border-red-500 shadow-red-400/40 animate-shake"
+            : ""
+        }`}
+      >
         <h2 className="text-3xl font-bold text-center text-white mb-6 drop-shadow-lg">
           Member Login
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
@@ -75,11 +102,29 @@ export default function MemberLogin() {
           {/* Button */}
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-lg shadow-lg hover:bg-blue-700 hover:shadow-blue-500/50 transform hover:scale-[1.02] transition-all"
+            disabled={loading}
+            className={`w-full py-3 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300 ${
+              loading
+                ? "bg-blue-500 cursor-not-allowed"
+                : status === "success"
+                ? "bg-green-600 hover:bg-green-700 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-[1.02]"
+            }`}
           >
-            Login
+            {loading
+              ? "Logging in..."
+              : status === "success"
+              ? "✅ Login Successful!"
+              : "Login"}
           </button>
         </form>
+
+        {/* Error message */}
+        {status === "error" && (
+          <p className="text-center text-red-400 mt-4 font-medium">
+            ❌ Invalid credentials or network error
+          </p>
+        )}
 
         {/* Extra */}
         <p className="text-gray-400 text-center mt-6 text-sm">

@@ -7,7 +7,7 @@ export const ownerLogin = async (data) => {
 };
 
 
-export const trainerLogin = async (data) => {
+export const userLogin = async (data) => {
   const res = await axiosInstance.post("/auth/login", data);
   return res.data;
 };
