@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route } from "react-router-dom";
+import {React,useEffect} from 'react'
+import { Routes, Route,useNavigate } from "react-router-dom";
 
 import Overview from '../TrainerDashboardPages/Overview'
 import MyMembers from '../TrainerDashboardPages/MyMembers'
@@ -9,8 +9,36 @@ import SettingsPage from './SettingPage';
 import AttendancePage from './Attendance';
 
 export default function TrainerDashboard() {
+    const navigate = useNavigate();
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userId");
+
+    // Optional: clear session storage if used
+    sessionStorage.clear();
+
+    navigate("/login/trainer");
+  };
+
+  // When the tab closes or refreshes, remove token
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userId");
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   return (
     <div className="flex h-full">
+
+      
       
 
       {/* Content Area */}

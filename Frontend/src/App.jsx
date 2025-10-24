@@ -18,6 +18,7 @@ import TrainerLogin from './pages/login/trainerLogin'
 import MainLayout from './layouts/MainLayout'
 import AuthLayout from './layouts/AuthLayout'
 import DashboardLayout from './layouts/DashboardLayout'
+import ProtectedRoute from './components/ProtectedRoute'
 
 
 
@@ -48,9 +49,21 @@ export default function App() {
             <Route path='/login/member' element={<MemberLogin />} />
           </Route>
           <Route element={<DashboardLayout />}>
-              <Route path='/owner-dashboard/*' element={<OwnerDashboard />} />
-              <Route path='/trainer-dashboard/*' element={<TrainerDashboard />}/>
-              <Route path='/member-dashboard/*' element={<MemberDashboard />}  />
+              <Route path='/owner-dashboard/*' element={
+                <ProtectedRoute roleRequired="owner">
+                  <OwnerDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path='/trainer-dashboard/*' element={
+                <ProtectedRoute roleRequired="trainer">
+                  <TrainerDashboard />
+                </ProtectedRoute>
+              }/>
+              <Route path='/member-dashboard/*' element={
+                <ProtectedRoute roleRequired="member">
+                  <MemberDashboard />
+                </ProtectedRoute>
+              }  />
           </Route>
 
           
