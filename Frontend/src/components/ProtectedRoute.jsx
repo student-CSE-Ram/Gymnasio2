@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children, roleRequired }) {
       setAuthorized(false);
     }
 
-    // Small delay to prevent flicker (optional but useful)
+    // Small delay to prevent flicker
     setTimeout(() => setLoading(false), 100);
   }, [roleRequired]);
 
