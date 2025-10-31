@@ -41,13 +41,13 @@ exports.createPlan = async (req,res) =>{
 
 exports.updatePlan = async (req,res) =>{
     try {
-        const {id} = req.params;
+        const {name} = req.params;
 
-        const {name , price, duration ,features} = req.body;
+        const { price, duration ,features} = req.body;
 
-        const updatedPlan = await Plan.findByIdAndUpdate(
-            id,
-            {name, price, duration, features},
+        const updatedPlan = await Plan.findOneAndUpdate(
+            {name :name},
+            {price, duration, features},
             {new: true}
         );
 

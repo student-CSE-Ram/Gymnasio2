@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/createPlan',authMiddleware,roleMiddleware("owner"),createPlan);
 router.get('/getAllPlans',authMiddleware,getAllPlans);
-router.put('/updatePlan',authMiddleware,roleMiddleware("owner"),updatePlan);
+router.put('/updatePlan/:name',authMiddleware,roleMiddleware("owner"),updatePlan);
 router.delete('/delete/by-id/:id',authMiddleware,roleMiddleware("owner"),deletePlanById);
 router.delete('/delete/by-name/:name',authMiddleware,roleMiddleware("owner"),deletePlanByName);
 
