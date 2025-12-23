@@ -49,7 +49,7 @@ exports.getAllMember = async (req,res) =>{
 
 exports.createTrainer=async(req,res)=>{
     try {
-        const {name,email,password} = req.body;
+        const {name,email,phone,specialization,password} = req.body;
 
         const existingTrainer = await User.findOne({email});
 
@@ -63,6 +63,8 @@ exports.createTrainer=async(req,res)=>{
             name: name,
             email:email,
             password:password,
+            phone:phone,
+            specialization:specialization,
             role:"trainer"
         });
          await newTrainer.save();
@@ -72,6 +74,7 @@ exports.createTrainer=async(req,res)=>{
             id: newTrainer._id,
             name: newTrainer.name,
             email: newTrainer.email,
+            specialization: newTrainer.specialization,
             role: newTrainer.role,
              },
          })
@@ -92,27 +95,60 @@ exports.getAlltrainer = async(req,res) =>{
     }
 }
 
-exports.deleteUser = async (req,res) =>{
-    try {
-        const {email,role} = req.body;
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
 
-        const user = await User.findOneAndDelete({email,role});
+  const user = await User.findById(id);
 
-        if (!user) {
-            return res.status(404).json({
-                msg:"User not found"
-            })
-        }
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-        return res.status(200).json({msg:`${role} deleted successfully`,
-            id:user._id,
-            name:user.name,
-            email:user.email
-        })
-    } catch (error) {
-        console.log(`Error deleting ${role}`,error);
-        return res.status(500).json({msg:`Cannot delete the ${role}`})
-        
+  if (user.role !== "trainer") {
+    return res.status(400).json({ message: "Only trainers can be deleted here" });
+  }
+
+  await user.deleteOne();
+
+  res.json({ message: "Trainer deleted successfully" });
+};
+
+exports.assignMemberToTrainer = async (req, res) => {
+  try {
+    if (req.user.role !== "owner") {
+      return res.status(403).json({ message: "Forbidden" });
     }
-}
+
+    const { userId, trainerUserId } = req.body;
+
+    const member = await User.findById(userId);
+    if (!member || member.role !== "member") {
+      return res.status(400).json({ message: "User is not a member" });
+    }
+
+    const trainer = await User.findById(trainerUserId);
+    if (!trainer || trainer.role !== "trainer") {
+      return res.status(400).json({ message: "User is not a trainer" });
+    }
+
+    member.assignedTrainer = trainer._id;
+    await member.save();
+
+    res.json({ message: "Member assigned to trainer" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.getTrainerMembers = async (req, res) => {
+  if (req.user.role !== "trainer") {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  const members = await User.find({
+    role: "member",
+    assignedTrainer: req.user.id,
+  });
+
+  res.json(members);
+};
 

@@ -24,6 +24,25 @@ const userSchema = new mongoose.Schema(
       enum: ["owner", "trainer", "member"],
       default: "member",
     },
+     // Trainer-only fields
+    phone: {
+      type: String,
+      required: function () {
+        return this.role === "trainer";
+      },
+    },
+    specialization: {
+      type: String,
+      required: function () {
+        return this.role === "trainer";
+      },
+    },
+    assignedTrainer: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  default: null,
+},
+
     profileImage: {
       type: String,
       default: "",

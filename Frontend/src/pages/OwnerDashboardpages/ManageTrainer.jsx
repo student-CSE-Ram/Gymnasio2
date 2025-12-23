@@ -55,16 +55,18 @@ export default function ManageTrainer() {
 
   // Delete trainer
   const handleDeleteTrainer = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this trainer?")) return;
-    try {
-      await deleteUser({ email, role:"trainer" });
-      toast.success("Trainer deleted successfully");
-      fetchTrainers();
-    } catch (error) {
-      toast.error("Failed to delete trainer");
-      console.error(error);
-    }
-  };
+  if (!window.confirm("Are you sure you want to delete this trainer?")) return;
+
+  try {
+    await deleteUser(id);
+    toast.success("Trainer deleted successfully");
+    fetchTrainers();
+  } catch (error) {
+    toast.error("Failed to delete trainer");
+    console.error(error);
+  }
+};
+
 
   // Filter trainers (search by anything)
   const filteredTrainers = trainers.filter((trainer) =>

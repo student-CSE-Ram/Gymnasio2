@@ -1,31 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
 
+/**
+ * ProtectedRoute
+ * - roleRequired: "owner" | "trainer" | "member"
+ * - children: the dashboard component
+ */
 export default function ProtectedRoute({ children, roleRequired }) {
-  const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+  // No token or user → redirect to login based on required role
+  if (!token || !user) {
+    let loginPage = "/login/member";
+    if (roleRequired === "owner") loginPage = "/login/owner";
+    else if (roleRequired === "trainer") loginPage = "/login/trainer";
 
-    if (token && (!roleRequired || role === roleRequired)) {
-      setAuthorized(true);
-    } else {
-      setAuthorized(false);
-    }
-
-    // Small delay to prevent flicker
-    setTimeout(() => setLoading(false), 100);
-  }, [roleRequired]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p>Checking authentication...</p>
-      </div>
-    );
+    return <Navigate to={loginPage} replace />;
   }
 
-  return authorized ? children : <Navigate to="/login/member" replace />;
+  // Role mismatch → unauthorized
+  if (roleRequired && user.role.toLowerCase() !== roleRequired.toLowerCase()) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
 }

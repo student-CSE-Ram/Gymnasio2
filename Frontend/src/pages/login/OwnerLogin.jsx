@@ -13,39 +13,43 @@ export default function OwnerLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setStatus(null);
+
+  if (!formData.email || !formData.password) {
+    setStatus("error");
+    return;
+  }
+
+  try {
     setLoading(true);
-    setStatus(null);
 
-    if (!formData.email || !formData.password) {
-      setLoading(false);
-      setStatus("error");
-      return alert("Please fill all the fields");
-    }
+    const res = await ownerLogin(formData);
 
-    try {
-      const data = await ownerLogin(formData);
+    // Save auth state in localStorage
+    localStorage.setItem("token", res.token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: res.user._id,
+        name: res.user.name,
+        role: res.user.role,
+      })
+    );
 
-      // Save token + role in local storage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.user.role);
-      localStorage.setItem("userId", data.user._id);
+    setStatus("success");
 
-      setStatus("success");
-
-      // Smooth visual feedback before navigation
-      setTimeout(() => {
-        navigate("/owner-dashboard");
-      }, 1200);
-    } catch (err) {
-      console.error("Login failed:", err);
-      setStatus("error");
-      // alert(err.response?.data?.msg || "Invalid credentials");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Navigate to proper dashboard based on role
+    const role = res.user.role.toLowerCase();
+    navigate(`/${role}-dashboard/overview`);
+  } catch (err) {
+    console.error("Login failed:", err);
+    setStatus("error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black">

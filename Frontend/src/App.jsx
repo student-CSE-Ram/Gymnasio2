@@ -14,7 +14,7 @@ import MemberLogin from './pages/login/MemberLogin'
 import OwnerDashboard from './pages/dashboards/OwnerDashboard'
 import TrainerDashboard from './pages/dashboards/TrainerDashboard'
 import MemberDashboard from './pages/dashboards/MemberDashboard'
-import TrainerLogin from './pages/login/trainerLogin'
+import TrainerLogin from './pages/login/TrainerLogin.jsx'
 import MainLayout from './layouts/MainLayout'
 import AuthLayout from './layouts/AuthLayout'
 import DashboardLayout from './layouts/DashboardLayout'
@@ -49,16 +49,24 @@ export default function App() {
             <Route path='/login/member' element={<MemberLogin />} />
           </Route>
           <Route element={<DashboardLayout />}>
-              <Route path='/owner-dashboard/*' element={
-                <ProtectedRoute roleRequired="owner">
-                  <OwnerDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path='/trainer-dashboard/*' element={
-                <ProtectedRoute roleRequired="trainer">
-                  <TrainerDashboard />
-                </ProtectedRoute>
-              }/>
+              <Route
+  path="/owner-dashboard/*"
+  element={
+    <ProtectedRoute roleRequired="owner">
+      <OwnerDashboard />
+    </ProtectedRoute>
+  }
+/>
+
+             <Route
+  path="/trainer-dashboard/*"
+  element={
+    <ProtectedRoute roleRequired="trainer">
+      <TrainerDashboard />
+    </ProtectedRoute>
+  }
+/>
+
               <Route path='/member-dashboard/*' element={
                 <ProtectedRoute roleRequired="member">
                   <MemberDashboard />

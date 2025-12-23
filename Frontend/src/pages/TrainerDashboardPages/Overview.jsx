@@ -9,12 +9,15 @@ import {
 } from "lucide-react";
 
 export default function TrainerDashboard() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const userName = user?.name || "Trainer";
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
       <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">Welcome back, Alex 👋</h1>
+          <h1 className="text-2xl font-bold">Welcome back, {userName} 👋</h1>
           <p className="text-gray-500">Here’s what’s happening today</p>
         </div>
         <button className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:bg-emerald-700 transition">

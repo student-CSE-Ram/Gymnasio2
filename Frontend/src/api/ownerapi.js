@@ -24,7 +24,16 @@ export const createTrainer = async (data) => {
 };
 
 // Delete any user (member or trainer)
-export const deleteUser = async (data) => {
-  const res = await axiosInstance.delete("/ownerwork/delete-user", { data });
+export const deleteUser = async (id) => {
+  const res = await axiosInstance.delete(`/ownerwork/delete-user/${id}`, { id });
+  return res.data;
+};
+
+export const assignMemberToTrainer = async (data) => {
+  const res = await axiosInstance.post("/ownerwork/assign-member-trainer", data);
+  return res.data;
+};
+export const getTrainerMembers = async () => {
+  const res = await axiosInstance.get("/ownerwork/trainer-members");
   return res.data;
 };
