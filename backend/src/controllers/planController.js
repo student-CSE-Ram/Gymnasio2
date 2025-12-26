@@ -1,4 +1,5 @@
 const Plan = require('../models/Plan');
+const Payment = require("../models/Payment");
 
 exports.createPlan = async (req,res) =>{
     try {
@@ -101,3 +102,54 @@ exports.deletePlanById = async (req,res) =>{
         return res.status(500).json({msg: "Cannot delete the plan"})
     }
 }
+
+exports.getMyPlans = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Fetch only successful payments
+    const payments = await Payment.find({
+      userId,
+      status: "paid",
+    })
+      .populate("planId")
+      .sort({ createdAt: -1 });
+
+    const plans = payments.map((payment) => {
+      const plan = payment.planId;
+
+      if (!plan) return null;
+
+      // Start date = when payment succeeded
+      const startDate = payment.paidAt || payment.createdAt;
+
+      // duration is STRING → convert safely
+      const durationInMonths = Number(plan.duration);
+
+      if (isNaN(durationInMonths)) {
+        throw new Error(`Invalid duration for plan ${plan.name}`);
+      }
+
+      // Calculate end date
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + durationInMonths);
+
+      const isActive = new Date() <= endDate;
+
+      return {
+        paymentId: payment._id,
+        planId: plan._id,
+        name: plan.name,
+        price: `₹${payment.amount / 100}`,
+        start: startDate,
+        end: endDate,
+        status: isActive ? "Active" : "Expired",
+      };
+    }).filter(Boolean);
+
+    return res.status(200).json({ plans });
+  } catch (error) {
+    console.error("Error fetching my plans:", error);
+    return res.status(500).json({ msg: "Failed to fetch plans" });
+  }
+};

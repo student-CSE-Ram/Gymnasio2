@@ -10,7 +10,7 @@ import ManagePayments from "../OwnerDashboardpages/ManagePayments";
 import ManagePlans from "../OwnerDashboardpages/ManagePlans";
 import Reports from "../OwnerDashboardpages/Reports";
 import SettingsPage from "./SettingPage";
-import AttendancePage from "./Attendance";
+import AttendancePage from "../OwnerDashboardpages/Attendance";
 
 export default function OwnerDashboard() {
  

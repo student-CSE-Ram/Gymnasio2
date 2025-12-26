@@ -3,7 +3,7 @@ import PlanCard from "../../components/Pricing/PlanCard";
 import {
   getAllPlans,
   createPlan,
-  updatePlan,
+  updatePlanByName as updatePlan,
   deletePlanByName,
 } from "../../api/planApi";
 

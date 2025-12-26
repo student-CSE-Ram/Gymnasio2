@@ -35,7 +35,7 @@ const menuConfig = {
     { name: "Overview", to: "overview", icon: <LayoutDashboard size={20} /> },
     { name: "My Plan", to: "plan", icon: <ClipboardList size={20} /> },
     { name: "Attendance", to: "attendance", icon: <CalendarCheck size={20} /> },
-    { name: "Payments", to: "payments", icon: <CreditCard size={20} /> },
+    { name: "Plans", to: "allplans", icon: <ClipboardList size={20} /> },
     { name: "Progress", to: "progress", icon: <BarChart3 size={20} /> },
     { name: "Settings", to: "settings", icon: <Settings size={20} /> },
   ],

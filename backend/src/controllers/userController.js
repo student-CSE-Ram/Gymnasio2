@@ -37,15 +37,19 @@ exports.createMember=async(req,res)=>{
     }
 }
 
-exports.getAllMember = async (req,res) =>{
-    try {
-        const members = await User.find({role :"member"}).select("-password");
-        return res.status(200).json({members})
-    } catch (error) {
-        console.log("Error geting the members",error);
-        return res.status(500).json({msg:"Cannot get the members"})
-    }
-}
+exports.getAllMember = async (req, res) => {
+  try {
+    const members = await User.find({ role: "member" })
+      .select("-password")
+      .populate("assignedTrainer", "name email");
+
+    return res.status(200).json({ members });
+  } catch (error) {
+    console.log("Error getting the members", error);
+    return res.status(500).json({ msg: "Cannot get the members" });
+  }
+};
+
 
 exports.createTrainer=async(req,res)=>{
     try {
@@ -96,22 +100,23 @@ exports.getAlltrainer = async(req,res) =>{
 }
 
 exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  const user = await User.findById(id);
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
+    await user.deleteOne();
+
+    res.json({ message: `${user.role} deleted successfully` });
+  } catch (err) {
+    console.error("Delete failed", err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  if (user.role !== "trainer") {
-    return res.status(400).json({ message: "Only trainers can be deleted here" });
-  }
-
-  await user.deleteOne();
-
-  res.json({ message: "Trainer deleted successfully" });
 };
+
 
 exports.assignMemberToTrainer = async (req, res) => {
   try {

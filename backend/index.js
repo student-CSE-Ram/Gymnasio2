@@ -9,6 +9,8 @@ const planRoutes = require('./src/routes/plan')
 const membershipRoute = require('./src/routes/membershipRoute')
 const classRoutes = require('./src/routes/classRoutes')
 const progressRoutes = require('./src/routes/progressRoutes')
+const attendanceRoutes = require("./src/routes/Attendance")
+const paymentRoutes = require("./src/routes/payment");
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(express.json());
@@ -16,8 +18,8 @@ app.use(express.json());
 connectDB();
 
 app.use(cors({
-     origin: "http://localhost:5173", 
-     credentials: true,
+    origin: "http://localhost:5173", 
+    credentials: true,
 }))
 
 app.use('/api/auth',authUser);
@@ -28,6 +30,13 @@ app.use('/api/membership',membershipRoute)
 
 app.use('/api/class',classRoutes)
 app.use('/api/progress',progressRoutes)
+
+app.use("/api/attendance", attendanceRoutes);
+app.use("/api/payments", paymentRoutes);
+
+app.use("/api/owner-dashboard", require("./src/routes/ownerDashboard"));
+
+
 
 
 

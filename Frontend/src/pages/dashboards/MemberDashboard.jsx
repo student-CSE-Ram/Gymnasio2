@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Overview from '../MemberDashboardPages/Overview'
 import Progress from '../MemberDashboardPages/Progress'
 import MyPlans from '../MemberDashboardPages/MyPlans'
-import Payments from '../MemberDashboardPages/Payments'
+import AllPlans from '../MemberDashboardPages/AllPlans'
 import SettingsPage from './SettingPage'
 import AttendancePage from './Attendance'
 
@@ -19,7 +19,7 @@ export default function MemberDashboard() {
         <Route path="progress" element={<Progress />} />
         <Route path='attendance' element={<AttendancePage user={{ role: "member" }}/>} />
         <Route path="plan" element={<MyPlans />} />
-        <Route path="payments" element={<Payments />} />
+        <Route path="allplans" element={<AllPlans />} />
         <Route path="settings" element={<SettingsPage role='member' />} />
 
 
