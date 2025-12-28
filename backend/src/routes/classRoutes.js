@@ -6,39 +6,44 @@ const {
   updateClass,
   deleteClass,
   getAllClasses,
-  bookClass
+  assignMember,
 } = require("../controllers/classController");
-const Class = require('../models/Class')
 
 const router = express.Router();
 
-// Create a class → Only owner or trainer can create
-router.post("/create", authMiddleware, roleMiddleware("owner", "trainer"), createClass);
+/* =========================
+   OWNER ONLY
+========================= */
 
-// Update a class → Only trainer can update
-router.put("/update/:id", authMiddleware, roleMiddleware("trainer"), updateClass);
+// Create class → ONLY OWNER
+router.post("/create", authMiddleware, roleMiddleware("owner"), createClass);
 
-// Delete a class → Only owner can delete
+// Delete class → ONLY OWNER
 router.delete("/delete/:id", authMiddleware, roleMiddleware("owner"), deleteClass);
 
-// Get all classes → Anyone logged in can see
+/* =========================
+   OWNER + TRAINER
+========================= */
+
+// Update class → OWNER or TRAINER (controller checks ownership)
+router.put("/update/:id", authMiddleware, roleMiddleware("owner", "trainer"), updateClass);
+
+/* =========================
+   ALL LOGGED-IN USERS
+========================= */
+
+// Get all classes
 router.get("/all", authMiddleware, getAllClasses);
 
-// Book a class → Member can book
-router.post("/book/:classId", authMiddleware, roleMiddleware("member"), bookClass);
+/* =========================
+   OWNER: ASSIGN MEMBER
+========================= */
 
-// get the class -> member can see his booked classes
-
-router.get('/my-classes', authMiddleware, async (req, res) => {
-  try {
-    const classes = await Class.find({ bookedMembers: req.user._id })
-      .populate('trainer', 'name') // shows trainer name
-      .select('name dateTime duration trainer'); // limit the fields
-    res.status(200).json(classes);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching classes', error });
-  }
-});
-
+router.post(
+  "/:classId/assign-member",
+  authMiddleware,
+  roleMiddleware("owner"),
+  assignMember
+);
 
 module.exports = router;

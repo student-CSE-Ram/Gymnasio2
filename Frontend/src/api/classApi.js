@@ -1,32 +1,37 @@
 import axiosInstance from "./axioaInstance";
 
-
+/* ================= CREATE CLASS ================= */
 export const createClass = async (data) => {
-    const res = await axiosInstance.post('/class/create',data)
-    return res.data
-}
+  const res = await axiosInstance.post("/class/create", data);
+  return res.data;
+};
 
-export const getAllClasses = async (data) => {
-    const res = await axiosInstance.get('/class/all',data)
-    return res.data
-}
+/* ================= GET ALL CLASSES ================= */
+export const getAllClasses = async () => {
+  const res = await axiosInstance.get("/class/all");
+  return res.data;
+};
 
-export const updateClass = async (data) =>{
-    const res = await axiosInstance.put('/class/update/:id',data)
-    return res.data
-}
+/* ================= UPDATE CLASS ================= */
+export const updateClass = async (id, data) => {
+  const res = await axiosInstance.put(`/class/update/${id}`, data);
+  return res.data;
+};
 
-export const deleteClass = async (data) =>{
-    const res = await axiosInstance.delete('/class/delete/:id',data);
-    return res.data
-}
+/* ================= DELETE CLASS ================= */
+export const deleteClass = async (id) => {
+  const res = await axiosInstance.delete(`/class/delete/${id}`);
+  return res.data;
+};
 
-export const bookClass = async (data) =>{
-    const res = await axiosInstance.post('/class/book/:classId',data)
-    return res.data
-}
+/* ================= ASSIGN MEMBER ================= */
+export const assignMemberToClass = async (classId, memberId) => {
+  const res = await axiosInstance.post(`/class/${classId}/assign-member`, { memberId });
+  return res.data;
+};
 
-export const getMyClass = async (data) => {
-    const res = await axiosInstance.get('/class/my-classes',data)
-    return res.data
-}
+/* ================= GET MY BOOKED CLASSES ================= */
+export const getMyClasses = async () => {
+  const res = await axiosInstance.get("/class/my-classes");
+  return res.data;
+};

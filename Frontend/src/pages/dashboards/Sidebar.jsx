@@ -20,6 +20,7 @@ const menuConfig = {
     { name: "Attendance", to: "attendance", icon: <CalendarCheck size={20} /> },
     { name: "Manage Payments", to: "manage-payments", icon: <CreditCard size={20} /> },
     { name: "Manage Plans", to: "manage-plans", icon: <ClipboardList size={20} /> },
+    { name: "Manage Classes", to: "manage-classes", icon: <ClipboardList size={20} /> },
     { name: "Reports", to: "reports", icon: <BarChart3 size={20} /> },
     { name: "Settings", to: "settings", icon: <Settings size={20} /> },
   ],
