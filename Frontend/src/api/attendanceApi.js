@@ -1,4 +1,4 @@
-import axiosInstance from "./axioaInstance";
+import axiosInstance from "./axiosInstance";
 
 /* ================= TRAINER ATTENDANCE ================= */
 

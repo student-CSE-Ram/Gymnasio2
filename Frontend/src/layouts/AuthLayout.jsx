@@ -6,9 +6,8 @@ import MemberLogin from '../pages/login/MemberLogin'
 
 export default function AuthLayout() {
   return (
-    <div>
-       
-<Outlet />
+    <div className="w-screen min-h-screen overflow-x-hidden">
+      <Outlet />
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import axiosInstance from "./axioaInstance";
+import axiosInstance from "./axiosInstance";
 
 export const createOrder = async (planId) => {
   const res = await axiosInstance.post("/payments/create-order", { planId });

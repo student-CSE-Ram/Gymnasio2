@@ -1,4 +1,4 @@
-import axiosInstance from "./axioaInstance";
+import axiosInstance from "./axiosInstance";
 
 export const getOwnerOverview = async () => {
   const res = await axiosInstance.get("/owner-dashboard/overview");

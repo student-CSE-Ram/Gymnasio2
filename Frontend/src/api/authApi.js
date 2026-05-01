@@ -1,5 +1,5 @@
 // src/api/authApi.js
-import axiosInstance from "./axioaInstance";
+import axiosInstance from "./axiosInstance";
 
 export const ownerLogin = async (data) => {
   const res = await axiosInstance.post("/auth/owner/login", data);

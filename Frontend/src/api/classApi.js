@@ -1,4 +1,4 @@
-import axiosInstance from "./axioaInstance";
+import axiosInstance from "./axiosInstance";
 
 /* ================= CREATE CLASS ================= */
 export const createClass = async (data) => {

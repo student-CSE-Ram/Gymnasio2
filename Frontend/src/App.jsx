@@ -19,6 +19,10 @@ import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ForgotPassword from "./pages/login/ForgotPassword.jsx";
+import ResetPassword from "./pages/login/ResetPassword.jsx";
+import VerifyEmail from "./pages/login/VerifyEmail.jsx";
+
 
 export default function App() {
   useEffect(() => {
@@ -43,6 +47,10 @@ export default function App() {
             <Route path="/login/owner" element={<OwnerLogin />} />
             <Route path="/login/trainer" element={<TrainerLogin />} />
             <Route path="/login/member" element={<MemberLogin />} />
+
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/verify-email" element={<VerifyEmail />} />
+  <Route path="/reset-password" element={<ResetPassword />} />
           </Route>
           <Route element={<DashboardLayout />}>
             <Route

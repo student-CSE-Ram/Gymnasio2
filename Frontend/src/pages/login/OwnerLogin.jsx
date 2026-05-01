@@ -152,12 +152,15 @@ const handleSubmit = async (e) => {
             </p>
           )}
 
-          <p className="text-center text-gray-400 text-sm mt-6">
-            Forgot your password?{" "}
-            <span className="text-indigo-400 hover:underline cursor-pointer">
-              Reset here
-            </span>
-          </p>
+<p className="text-center text-gray-400 text-sm mt-6">
+  Forgot your password?{" "}
+  <span
+    onClick={() => navigate("/forgot-password?role=owner")}
+    className="text-indigo-400 hover:underline cursor-pointer"
+  >
+    Reset here
+  </span>
+</p>
         </div>
       </div>
     </div>

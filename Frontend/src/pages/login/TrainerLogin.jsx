@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import GymnasioLogo from "/GymnasioBlackLogo.png";
 import { userLogin } from "../../api/authApi";
 
 export default function TrainerLogin() {
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState(null); // "success" | "error" | null
+  const [status, setStatus] = useState(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const navigate = useNavigate();
@@ -14,47 +14,45 @@ export default function TrainerLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setStatus(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus(null);
 
-  if (!formData.email || !formData.password) {
-    setStatus("error");
-    return;
-  }
+    if (!formData.email || !formData.password) {
+      setStatus("error");
+      return;
+    }
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await userLogin(formData);
+      const res = await userLogin(formData);
 
-    // Save auth state in localStorage
-    localStorage.setItem("token", res.token);
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        id: res.user._id,
-        name: res.user.name,
-        role: res.user.role,
-      })
-    );
+      localStorage.setItem("token", res.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: res.user._id,
+          name: res.user.name,
+          role: res.user.role,
+        })
+      );
 
-    setStatus("success");
+      setStatus("success");
 
-    // Navigate to proper dashboard based on role
-    const role = res.user.role.toLowerCase();
-    navigate(`/${role}-dashboard/overview`);
-  } catch (err) {
-    console.error("Login failed:", err);
-    setStatus("error");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      const role = res.user.role.toLowerCase();
+      navigate(`/${role}-dashboard/overview`);
+    } catch (err) {
+      console.error("Login failed:", err);
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black p-4">
+    <div className="flex w-full min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-black">
+      
       {/* Left Section */}
       <div className="hidden lg:flex flex-col justify-center items-center w-1/2 text-white px-12">
         <img
@@ -88,11 +86,14 @@ const handleSubmit = async (e) => {
           <h2 className="text-3xl font-bold text-center text-indigo-400 mb-2">
             Trainer Login
           </h2>
+
           <p className="text-center text-gray-400 mb-6 text-sm">
             Login to manage your gym clients and schedules.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
+            
+            {/* Email */}
             <div>
               <label className="block text-sm text-gray-300 mb-1">
                 Email Address
@@ -102,10 +103,12 @@ const handleSubmit = async (e) => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter your email"
+                className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
               />
             </div>
 
+            {/* Password */}
             <div>
               <label className="block text-sm text-gray-300 mb-1">
                 Password
@@ -115,24 +118,43 @@ const handleSubmit = async (e) => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500"
+                placeholder="Enter your password"
+                className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
               />
             </div>
 
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-lg transition disabled:opacity-60"
+              className={`w-full py-2.5 mt-2 font-semibold rounded-lg transition ${
+                loading
+                  ? "bg-indigo-400 cursor-not-allowed"
+                  : "bg-indigo-500 hover:bg-indigo-600"
+              }`}
             >
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
+          {/* Error */}
           {status === "error" && (
             <p className="text-center text-red-400 mt-4 font-medium">
               ❌ Invalid credentials or server error
             </p>
           )}
+
+          {/* 🔥 Forgot Password FIX */}
+          <p className="text-center text-gray-400 text-sm mt-6">
+            Forgot your password?{" "}
+            <Link
+              to="/forgot-password?role=trainer"
+              state={{ email: formData.email }}
+              className="text-indigo-400 hover:underline"
+            >
+              Reset here
+            </Link>
+          </p>
         </div>
       </div>
     </div>
