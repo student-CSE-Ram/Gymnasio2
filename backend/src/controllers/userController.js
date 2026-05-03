@@ -2,40 +2,44 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-exports.createMember=async(req,res)=>{
-    try {
-        const {name,email,password} = req.body;
+const hashPassword = require('../utils/hashedPassword');
 
-        const existingMember = await User.findOne({email});
+exports.createMember = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-        if (existingMember) {
-            return res.status(400).json({msg:"User already exist"})
-        }
+    const existingMember = await User.findOne({ email });
 
-        // const hashedPassword = await bcrypt.hash(password,10);
-
-        const newMember = new User({
-            name: name,
-            email:email,
-            password:password,
-            role:"member"
-        });
-         await newMember.save();
-           
-         return res.status(201).json({msg:"Member created successfully",
-          user: {
-                id: newMember._id,
-                name: newMember.name,
-                email: newMember.email,
-                role: newMember.role,
-            },
-         })
-
-    } catch (error) {
-        console.log(`The member can not be created`,error);
-        res.status(500).json({msg:"Internal server error"})
+    if (existingMember) {
+      return res.status(400).json({ msg: "User already exist" });
     }
-}
+
+    const hashedPassword = await hashPassword(password);
+
+    const newMember = new User({
+      name,
+      email,
+      password: hashedPassword, // ✅ FIXED
+      role: "member",
+    });
+
+    await newMember.save();
+
+    return res.status(201).json({
+      msg: "Member created successfully",
+      user: {
+        id: newMember._id,
+        name: newMember.name,
+        email: newMember.email,
+        role: newMember.role,
+      },
+    });
+
+  } catch (error) {
+    console.log("Member creation failed", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
 
 exports.getAllMember = async (req, res) => {
   try {
@@ -51,44 +55,45 @@ exports.getAllMember = async (req, res) => {
 };
 
 
-exports.createTrainer=async(req,res)=>{
-    try {
-        const {name,email,phone,specialization,password} = req.body;
+exports.createTrainer = async (req, res) => {
+  try {
+    const { name, email, phone, specialization, password } = req.body;
 
-        const existingTrainer = await User.findOne({email});
+    const existingTrainer = await User.findOne({ email });
 
-        if (existingTrainer) {
-            return res.status(400).json({msg:"Trainer already exist"})
-        }
-
-        // const hashedPassword = await bcrypt.hash(password,10);
-
-        const newTrainer = new User({
-            name: name,
-            email:email,
-            password:password,
-            phone:phone,
-            specialization:specialization,
-            role:"trainer"
-        });
-         await newTrainer.save();
-           
-         return res.status(201).json({msg:"Trainer Created Sucessfully",
-          user: {
-            id: newTrainer._id,
-            name: newTrainer.name,
-            email: newTrainer.email,
-            specialization: newTrainer.specialization,
-            role: newTrainer.role,
-             },
-         })
-
-    } catch (error) {
-        console.log(`The trainer can not be created `,error);
-        res.status(500).json({msg:"Internal server error"})
+    if (existingTrainer) {
+      return res.status(400).json({ msg: "Trainer already exist" });
     }
-}
 
+    const hashedPassword = await hashPassword(password);
+
+    const newTrainer = new User({
+      name,
+      email,
+      password: hashedPassword, // ✅ FIXED
+      phone,
+      specialization,
+      role: "trainer",
+    });
+
+    await newTrainer.save();
+
+    return res.status(201).json({
+      msg: "Trainer Created Successfully",
+      user: {
+        id: newTrainer._id,
+        name: newTrainer.name,
+        email: newTrainer.email,
+        specialization: newTrainer.specialization,
+        role: newTrainer.role,
+      },
+    });
+
+  } catch (error) {
+    console.log("Trainer creation failed", error);
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
 exports.getAlltrainer = async(req,res) =>{
     try {
         const trainers = await User.find({role:"trainer"}).select("-password");

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { resetPassword } from "../../api/authApi"; // ✅ THIS WAS MISSING
 import "./ForgotPassword.css";
 
 export default function ResetPassword() {
@@ -30,6 +31,8 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
 
+    console.log("Submitting reset:", { token, password });
+
     if (!token) {
       setError("Invalid or expired reset link.");
       return;
@@ -47,13 +50,15 @@ export default function ResetPassword() {
 
     setLoading(true);
     try {
-      // await api.resetPassword({ token, newPassword: password, role });
-
-      await new Promise((r) => setTimeout(r, 1200));
+      await resetPassword({
+        token,
+        password,
+      });
 
       setSuccess(true);
-    } catch {
-      setError("Failed to reset password.");
+    } catch (err) {
+      console.error("RESET ERROR:", err);
+      setError(err?.msg || err.response?.data?.msg || "Failed to reset password.");
     } finally {
       setLoading(false);
     }

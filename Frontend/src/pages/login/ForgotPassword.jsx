@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./ForgotPassword.css";
+import { Link } from "react-router-dom";
+import { forgotPassword } from "../../api/authApi";
+
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
+const location = useLocation();
+
+const initialEmail = location.state?.email || "";
+const [email, setEmail] = useState(initialEmail);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const params = new URLSearchParams(location.search);
   const role = params.get("role") || "member";
@@ -35,11 +40,10 @@ export default function ForgotPassword() {
     try {
       // await api.sendResetEmail({ email, role });
 
-      await new Promise((r) => setTimeout(r, 1200)); // mock
-
+      await forgotPassword(email);
       setSuccess(true);
-    } catch {
-      setError("Failed to send reset link.");
+    } catch (err) {
+      setError(err.response?.data?.msg || "Failed to send reset link.");
     } finally {
       setLoading(false);
     }
@@ -100,9 +104,9 @@ export default function ForgotPassword() {
           </button>
         </form>
 
-        <a href={config.back} className="fp-back-link">
+        <Link to={config.back} className="fp-back-link">
           ← Back to {config.label} Login
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -13,22 +13,35 @@ const attendanceRoutes = require("./src/routes/Attendance")
 const paymentRoutes = require("./src/routes/payment");
 const app = express();
 const PORT = process.env.PORT || 5000;
-const allowedOrigins = [
-    "http://localhost:5173",              // local dev
-    "https://gymnasio-one.vercel.app"     // live frontend
-];
+
 
 app.use(cors({
-    origin: function(origin, callback) {
-        // allow requests with no origin (like Postman)
-        if(!origin) return callback(null, true);
-        if(allowedOrigins.indexOf(origin) === -1){
-            const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
-            return callback(new Error(msg), false);
-        }
-        return callback(null, true);
-    },
-    credentials: true,
+  origin: (origin, callback) => {
+    console.log("Incoming origin:", origin); // 👈 DEBUG FIRST
+
+    // allow Postman / curl / same-origin
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://192.168.0.0", // placeholder, won't match directly
+    ];
+
+    // 🔥 allow ANY local network IP (this is your real problem solver)
+    const isLocalNetwork =
+      origin.startsWith("http://192.168.") ||
+      origin.startsWith("http://10.") ||
+      origin.startsWith("http://172.");
+
+    if (allowedOrigins.includes(origin) || isLocalNetwork) {
+      return callback(null, true);
+    }
+
+    console.log("❌ Blocked by CORS:", origin);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
 }));
 
 app.use(express.json());
