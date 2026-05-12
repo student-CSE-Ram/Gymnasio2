@@ -9,7 +9,7 @@ export default function Navbar() {
 
   const dropdownRef = useRef();
 
-  // 🔥 Close dropdown on outside click
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

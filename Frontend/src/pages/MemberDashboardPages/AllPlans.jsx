@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAllPlans } from "../../api/planApi";
 import { createOrder, capturePayment } from "../../api/paymentApi";
 import PlanCard from "../../components/Pricing/PlanCard";
+import { createMembership } from "../../api/membershipApi";
 
 export default function AllPlans() {
   const [plans, setPlans] = useState([]);
@@ -25,6 +26,7 @@ export default function AllPlans() {
 
   const handlePurchase = async (plan) => {
     try {
+      const user = JSON.parse(localStorage.getItem("user"));
       setPayingPlanId(plan._id);
 
       // 1️⃣ Create Razorpay order on backend
@@ -46,10 +48,18 @@ export default function AllPlans() {
               paymentId: response.razorpay_payment_id,
             });
 
-            alert("Payment successful! Your plan is now active.");
 
             // Optional: refresh plans or payments table
+            
+            await createMembership({
+              userId: user.id,
+              planId: plan._id,
+            });
+            
+            alert("Payment successful! Your plan is now active.");
+            alert("Membership Added.");
             fetchPlans();
+            
           } catch (err) {
             console.error("Payment capture failed", err);
             alert("Payment done, but verification failed");

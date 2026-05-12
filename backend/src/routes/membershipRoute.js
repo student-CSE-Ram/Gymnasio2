@@ -5,7 +5,7 @@ const { roleMiddleware } = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-router.post('/create', authMiddleware,roleMiddleware("owner"), createMembership);
+router.post('/create', authMiddleware,roleMiddleware, createMembership);
 
 
 module.exports = router;

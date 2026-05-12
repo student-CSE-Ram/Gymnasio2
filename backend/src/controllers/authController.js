@@ -143,11 +143,10 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // ✅ ALWAYS hash here (no pre-save dependency)
-    const newHashedPassword = await hashPassword(password);
+    // const newHashedPassword = await hashPassword(password);
 
     await User.findByIdAndUpdate(user._id, {
-      password: newHashedPassword,
+      password,
       resetPasswordToken: undefined,
       resetPasswordExpires: undefined,
     });

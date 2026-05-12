@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: (origin, callback) => {
-    console.log("Incoming origin:", origin); // 👈 DEBUG FIRST
+    console.log("Incoming origin:", origin);
 
     // allow Postman / curl / same-origin
     if (!origin) return callback(null, true);
@@ -38,7 +38,7 @@ app.use(cors({
       return callback(null, true);
     }
 
-    console.log("❌ Blocked by CORS:", origin);
+    console.log("Blocked by CORS:", origin);
     return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,

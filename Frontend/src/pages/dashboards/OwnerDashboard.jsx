@@ -10,6 +10,7 @@ import ManagePayments from "../OwnerDashboardpages/ManagePayments";
 import ManagePlans from "../OwnerDashboardpages/ManagePlans";
 import ManageClasses from "../OwnerDashboardpages/ManageClass";
 import Reports from "../OwnerDashboardpages/Reports";
+import MembershipTracker from "../OwnerDashboardpages/Membership";
 import SettingsPage from "./SettingPage";
 import AttendancePage from "../OwnerDashboardpages/Attendance";
 
@@ -29,6 +30,7 @@ export default function OwnerDashboard() {
             <Route path="manage-payments" element={<ManagePayments />} />
             <Route path="manage-plans" element={<ManagePlans />} />
             <Route path="manage-classes" element={<ManageClasses />} />
+            <Route path="membership" element={<MembershipTracker />} />
             <Route path="reports" element={<Reports />} />
             <Route path="attendance" element={<AttendancePage user={{ role: "owner" }} />} />
             <Route path="settings" element={<SettingsPage role="owner" />} />

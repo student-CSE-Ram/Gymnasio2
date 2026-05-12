@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Membership = require("../models/Membership");
 
 const hashPassword = require('../utils/hashedPassword');
 
@@ -14,12 +15,12 @@ exports.createMember = async (req, res) => {
       return res.status(400).json({ msg: "User already exist" });
     }
 
-    const hashedPassword = await hashPassword(password);
+    // const hashedPassword = await hashPassword(password);
 
     const newMember = new User({
       name,
       email,
-      password: hashedPassword, // ✅ FIXED
+      password, 
       role: "member",
     });
 
@@ -44,10 +45,27 @@ exports.createMember = async (req, res) => {
 exports.getAllMember = async (req, res) => {
   try {
     const members = await User.find({ role: "member" })
-      .select("-password")
-      .populate("assignedTrainer", "name email");
+  .select("-password")
+  .populate("assignedTrainer", "name email");
 
-    return res.status(200).json({ members });
+const membersWithPlans = await Promise.all(
+  members.map(async (member) => {
+
+    const membership = await Membership.findOne({
+      user: member._id,
+      status: "active",
+    }).populate("plan", "name");
+
+    return {
+      ...member.toObject(),
+      purchasedPlan: membership?.plan?.name || "No Plan",
+    };
+  })
+);
+
+return res.status(200).json({
+  members: membersWithPlans,
+});
   } catch (error) {
     console.log("Error getting the members", error);
     return res.status(500).json({ msg: "Cannot get the members" });
@@ -65,12 +83,12 @@ exports.createTrainer = async (req, res) => {
       return res.status(400).json({ msg: "Trainer already exist" });
     }
 
-    const hashedPassword = await hashPassword(password);
+    // const hashedPassword = await hashPassword(password);
 
     const newTrainer = new User({
       name,
       email,
-      password: hashedPassword, // ✅ FIXED
+      password, 
       phone,
       specialization,
       role: "trainer",

@@ -180,77 +180,94 @@ export default function ManageMembers() {
       />
 
       {/* TABLE */}
-      <div className="bg-white shadow rounded overflow-x-auto">
-        <table className="w-full border">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-3">Name</th>
-              <th className="border p-3">Email</th>
-              <th className="border p-3">Assigned Trainer</th>
-              <th className="border p-3">Actions</th>
-            </tr>
-          </thead>
+{/* TABLE */}
+<div className="bg-white shadow rounded overflow-x-auto">
+  <table className="w-full border">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="border p-3">Name</th>
+        <th className="border p-3">Email</th>
+        <th className="border p-3">Purchased Plan</th>
+        <th className="border p-3">Assigned Trainer</th>
+        <th className="border p-3">Actions</th>
+      </tr>
+    </thead>
 
-          <tbody>
-            {filteredMembers.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="p-4 text-center">
-                  No members found
-                </td>
-              </tr>
-            ) : (
-              filteredMembers.map((m) => (
-                <tr key={m._id} className="hover:bg-gray-50">
-                  <td className="border p-3">{m.name}</td>
-                  <td className="border p-3">{m.email}</td>
+    <tbody>
+      {filteredMembers.length === 0 ? (
+        <tr>
+          <td colSpan="5" className="p-4 text-center">
+            No members found
+          </td>
+        </tr>
+      ) : (
+        filteredMembers.map((m) => (
+          <tr key={m._id} className="hover:bg-gray-50">
+            <td className="border p-3 font-medium">{m.name}</td>
 
-                  {/* ASSIGN DROPDOWN */}
-                  <td className="border p-3">
-                    <select
-                      value={
-                        assignments[m._id] ||
-                        m.assignedTrainer?._id ||
-                        ""
-                      }
-                      onChange={(e) =>
-                        setAssignments({
-                          ...assignments,
-                          [m._id]: e.target.value,
-                        })
-                      }
-                      className="border p-2 rounded w-full"
-                    >
-                      <option value="">Unassigned</option>
-                      {trainers.map((t) => (
-                        <option key={t._id} value={t._id}>
-                          {t.name}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
+            <td className="border p-3">{m.email}</td>
 
-                  {/* ACTIONS */}
-                  <td className="border p-3 flex gap-2 justify-center">
-                    <button
-                      onClick={() => handleAssignTrainer(m._id)}
-                      className="bg-green-600 text-white px-3 py-1 rounded"
-                    >
-                      Assign
-                    </button>
+            {/* PURCHASED PLAN */}
+            <td className="border p-3">
+              {m.purchasedPlan ? (
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                  {m.purchasedPlan}
+                </span>
+              ) : (
+                <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm">
+                  No Plan
+                </span>
+              )}
+            </td>
 
-                    <button
-                      onClick={() => handleDelete(m._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+            {/* ASSIGN DROPDOWN */}
+            <td className="border p-3">
+              <select
+                value={
+                  assignments[m._id] ||
+                  m.assignedTrainer?._id ||
+                  ""
+                }
+                onChange={(e) =>
+                  setAssignments({
+                    ...assignments,
+                    [m._id]: e.target.value,
+                  })
+                }
+                className="border p-2 rounded w-full"
+              >
+                <option value="">Unassigned</option>
+
+                {trainers.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </td>
+
+            {/* ACTIONS */}
+            <td className="border p-3 flex gap-2 justify-center">
+              <button
+                onClick={() => handleAssignTrainer(m._id)}
+                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+              >
+                Assign
+              </button>
+
+              <button
+                onClick={() => handleDelete(m._id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
     </div>
   );
 }
