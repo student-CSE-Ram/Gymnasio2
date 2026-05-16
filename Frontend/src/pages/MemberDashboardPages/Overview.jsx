@@ -12,13 +12,12 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-import { getMyPlans } from "../../api/planApi";
+import { getMyMemberships } from "../../api/membershipApi";
 import { getMyPayments } from "../../api/paymentApi";
 
 export default function MemberOverview() {
 
-  const [plans, setPlans] = useState([]);
-
+const [memberships, setMemberships] = useState([]);
   const [payments, setPayments] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -31,56 +30,74 @@ export default function MemberOverview() {
 
   }, []);
 
-  const fetchDashboardData = async () => {
+const fetchDashboardData = async () => {
+
+  try {
+
+    const membershipsData = await getMyMemberships();
+
+    setMemberships(
+      membershipsData.membership || []
+    );
 
     try {
 
-      const [plansData, paymentsData] = await Promise.all([
-        getMyPlans(),
-        getMyPayments(),
-      ]);
+      const paymentsData = await getMyPayments();
 
-      setPlans(plansData.plans || []);
+      setPayments(
+        paymentsData.payments || []
+      );
 
-      setPayments(paymentsData.payments || []);
+    } catch (paymentError) {
 
-    } catch (error) {
+      console.error(
+        "Payment API failed",
+        paymentError
+      );
 
-      console.error("Failed to load dashboard", error);
-
-    } finally {
-
-      setLoading(false);
+      setPayments([]);
     }
-  };
+
+  } catch (error) {
+
+    console.error(
+      "Failed to load memberships",
+      error
+    );
+
+  } finally {
+
+    setLoading(false);
+  }
+};
 
   // Latest membership
   const latestMembership = useMemo(() => {
 
-    if (!plans.length) return null;
+if (!memberships.length) return null;
+return [...memberships].sort(
+  (a, b) =>
+    new Date(b.startDate) -
+    new Date(a.startDate)
+)[0];
 
-    return [...plans].sort(
-      (a, b) =>
-        new Date(b.start) - new Date(a.start)
-    )[0];
-
-  }, [plans]);
+  }, [memberships]);
 
   // Remaining days
-  const remainingDays = useMemo(() => {
-
-    if (!latestMembership?.end) return 0;
-
-    const diff =
-      new Date(latestMembership.end).getTime() -
-      new Date().getTime();
-
-    return Math.max(
-      Math.ceil(diff / (1000 * 60 * 60 * 24)),
-      0
-    );
-
-  }, [latestMembership]);
+const remainingDays =
+  latestMembership?.endDate
+    ? Math.max(
+        0,
+        Math.ceil(
+          (
+            new Date(
+              latestMembership.endDate
+            ) - new Date()
+          ) /
+          (1000 * 60 * 60 * 24)
+        )
+      )
+    : 0;
 
   // Total amount spent
   const totalSpent = useMemo(() => {
@@ -148,8 +165,7 @@ export default function MemberOverview() {
               </p>
 
               <h2 className="text-2xl font-bold mt-2 text-gray-900">
-                {latestMembership?.name || "No Plan"}
-              </h2>
+{latestMembership?.plan?.name || "No Plan"}              </h2>
             </div>
 
             <div className="bg-emerald-100 p-3 rounded-2xl">
@@ -299,7 +315,7 @@ export default function MemberOverview() {
               </div>
 
               <p className="text-2xl font-bold text-gray-900 capitalize">
-                {latestMembership.name}
+                {latestMembership?.plan?.name}
               </p>
             </div>
 
@@ -313,8 +329,7 @@ export default function MemberOverview() {
               </div>
 
               <p className="text-2xl font-bold text-gray-900">
-                {latestMembership.duration} Months
-              </p>
+{latestMembership?.plan?.durationInMonths || 0} Months              </p>
             </div>
 
             <div className="bg-gray-50 rounded-2xl p-5 border">
@@ -327,9 +342,11 @@ export default function MemberOverview() {
               </div>
 
               <p className="text-xl font-bold text-gray-900">
-                {new Date(
-                  latestMembership.start
-                ).toLocaleDateString()}
+{latestMembership?.startDate
+  ? new Date(
+      latestMembership.startDate
+    ).toLocaleDateString()
+  : "N/A"}
               </p>
             </div>
 
@@ -343,9 +360,11 @@ export default function MemberOverview() {
               </div>
 
               <p className="text-xl font-bold text-gray-900">
-                {new Date(
-                  latestMembership.end
-                ).toLocaleDateString()}
+{latestMembership?.endDate
+  ? new Date(
+      latestMembership.endDate
+    ).toLocaleDateString()
+  : "N/A"}
               </p>
             </div>
           </div>

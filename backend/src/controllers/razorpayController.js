@@ -70,25 +70,45 @@ if (existingMembership) {
 
 // MEMBER: get only their own payments
 exports.getMyPayments = async (req, res) => {
+
   try {
+
     const userId = req.user.id;
 
     const payments = await Payment.find({ userId })
-      .populate("planId", "name price") // get plan name and price
-      .sort({ createdAt: -1 }); // newest first
+      .populate("planId", "name price")
+      .sort({ createdAt: -1 });
 
     const formattedPayments = payments.map((p) => ({
+
       id: p._id,
-      plan: p.planId.name,
-      amount: p.amount,
-      date: p.createdAt.toLocaleDateString(),
-      status: p.status,
+
+      plan: p.planId?.name || "Deleted Plan",
+
+      amount: p.amount / 100,
+
+      date: new Date(
+        p.createdAt
+      ).toLocaleDateString(),
+
+      status: p.status || "paid",
+
     }));
 
-    res.status(200).json({ payments: formattedPayments });
+    return res.status(200).json({
+      payments: formattedPayments
+    });
+
   } catch (error) {
-    console.error("Error fetching payments:", error);
-    res.status(500).json({ msg: "Cannot fetch payments" });
+
+    console.error(
+      "Error fetching payments:",
+      error
+    );
+
+    return res.status(500).json({
+      msg: "Cannot fetch payments"
+    });
   }
 };
 exports.capturePayment = async (req, res) => {
