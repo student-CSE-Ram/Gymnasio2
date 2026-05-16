@@ -6,9 +6,9 @@ const User = require("../models/User");
 ========================= */
 exports.createClass = async (req, res) => {
   try {
-    const { name, trainer, date, time, duration, maxMembers, description } = req.body;
+    const { name, trainer, date, time, durationInMonths, maxMembers, description } = req.body;
 
-    if (!name || !trainer || !date || !time || !duration) {
+    if (!name || !trainer || !date || !time || !durationInMonths) {
       return res.status(400).json({ msg: "Missing required fields" });
     }
 
@@ -25,11 +25,11 @@ exports.createClass = async (req, res) => {
       trainer: trainerDoc._id,
       trainerName: trainerDoc.name,
       dateTime,
-      duration,
+      durationInMonths,
       maxMembers: maxMembers || 20,
       description,
       bookedMembers: [],
-      createdBy: req.user._id,
+      createdBy: req.user.id,
     });
 
     return res.status(201).json({
@@ -50,7 +50,7 @@ exports.getAllClasses = async (req, res) => {
     let classes;
 
     if (req.user.role === "trainer") {
-      classes = await Class.find({ trainer: req.user._id })
+      classes = await Class.find({ trainer: req.user.id })
         .populate("trainer", "name email"); // populate trainer info
     } else {
       classes = await Class.find()
@@ -74,7 +74,7 @@ exports.updateClass = async (req, res) => {
     const classDoc = await Class.findById(id);
     if (!classDoc) return res.status(404).json({ msg: "Class not found" });
 
-    if (req.user.role !== "owner" && classDoc.trainer.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "owner" && classDoc.trainer.toString() !== req.user.id.toString()) {
       return res.status(403).json({ msg: "Access denied" });
     }
 
@@ -101,7 +101,7 @@ exports.deleteClass = async (req, res) => {
     const classDoc = await Class.findById(id);
     if (!classDoc) return res.status(404).json({ msg: "Class not found" });
 
-    if (req.user.role !== "owner" && classDoc.trainer.toString() !== req.user._id.toString()) {
+    if (req.user.role !== "owner" && classDoc.trainer.toString() !== req.user.id.toString()) {
       return res.status(403).json({ msg: "Access denied" });
     }
 

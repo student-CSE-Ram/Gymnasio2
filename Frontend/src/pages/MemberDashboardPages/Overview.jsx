@@ -1,112 +1,471 @@
-import React from "react";
+
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
   CalendarDays,
   Dumbbell,
   Activity,
   CreditCard,
   Trophy,
+  User,
+  Clock3,
+  AlertTriangle,
 } from "lucide-react";
 
+import { getMyPlans } from "../../api/planApi";
+import { getMyPayments } from "../../api/paymentApi";
+
 export default function MemberOverview() {
+
+  const [plans, setPlans] = useState([]);
+
+  const [payments, setPayments] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+
+    fetchDashboardData();
+
+  }, []);
+
+  const fetchDashboardData = async () => {
+
+    try {
+
+      const [plansData, paymentsData] = await Promise.all([
+        getMyPlans(),
+        getMyPayments(),
+      ]);
+
+      setPlans(plansData.plans || []);
+
+      setPayments(paymentsData.payments || []);
+
+    } catch (error) {
+
+      console.error("Failed to load dashboard", error);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+  // Latest membership
+  const latestMembership = useMemo(() => {
+
+    if (!plans.length) return null;
+
+    return [...plans].sort(
+      (a, b) =>
+        new Date(b.start) - new Date(a.start)
+    )[0];
+
+  }, [plans]);
+
+  // Remaining days
+  const remainingDays = useMemo(() => {
+
+    if (!latestMembership?.end) return 0;
+
+    const diff =
+      new Date(latestMembership.end).getTime() -
+      new Date().getTime();
+
+    return Math.max(
+      Math.ceil(diff / (1000 * 60 * 60 * 24)),
+      0
+    );
+
+  }, [latestMembership]);
+
+  // Total amount spent
+  const totalSpent = useMemo(() => {
+
+    return payments.reduce(
+      (acc, payment) => acc + Number(payment.amount || 0),
+      0
+    );
+
+  }, [payments]);
+
+  // Latest payment
+  const latestPayment = payments[0];
+
+  if (loading) {
+
+    return (
+      <div className="p-6 text-gray-500">
+        Loading dashboard...
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <header>
-        <h1 className="text-2xl font-bold">Welcome back, Siddharth 👋</h1>
-        <p className="text-gray-500">Here’s an overview of your fitness journey</p>
+    <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
+
+      {/* HEADER */}
+      <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div>
+
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome back, {user?.name} 👋
+          </h1>
+
+          <p className="text-gray-500 mt-1">
+            Here’s your real-time fitness dashboard overview.
+          </p>
+        </div>
+
+        <div className="bg-black text-white px-5 py-3 rounded-2xl shadow-lg">
+
+          <p className="text-sm text-gray-300">
+            Current Membership
+          </p>
+
+          <h2 className="text-xl font-bold mt-1 capitalize">
+            {latestMembership?.status || "No Membership"}
+          </h2>
+        </div>
       </header>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg text-center">
-          <Dumbbell className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-          <p className="text-lg font-semibold">Gold Plan</p>
-          <span className="text-gray-500 text-sm">Active Membership</span>
+      {/* STATS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        {/* MEMBERSHIP */}
+        <div className="bg-white rounded-3xl p-6 shadow border hover:shadow-xl transition-all">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-gray-500 text-sm">
+                Active Plan
+              </p>
+
+              <h2 className="text-2xl font-bold mt-2 text-gray-900">
+                {latestMembership?.name || "No Plan"}
+              </h2>
+            </div>
+
+            <div className="bg-emerald-100 p-3 rounded-2xl">
+              <Dumbbell className="w-8 h-8 text-emerald-600" />
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg text-center">
-          <CalendarDays className="w-10 h-10 text-blue-500 mx-auto mb-2" />
-          <p className="text-lg font-semibold">12 Sessions</p>
-          <span className="text-gray-500 text-sm">This Month</span>
+        {/* REMAINING DAYS */}
+        <div className="bg-white rounded-3xl p-6 shadow border hover:shadow-xl transition-all">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-gray-500 text-sm">
+                Remaining Days
+              </p>
+
+              <h2 className="text-2xl font-bold mt-2 text-gray-900">
+                {remainingDays}
+              </h2>
+            </div>
+
+            <div className="bg-blue-100 p-3 rounded-2xl">
+              <CalendarDays className="w-8 h-8 text-blue-600" />
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg text-center">
-          <Activity className="w-10 h-10 text-amber-500 mx-auto mb-2" />
-          <p className="text-lg font-semibold">5 Kg</p>
-          <span className="text-gray-500 text-sm">Weight Loss</span>
+        {/* TOTAL PAYMENTS */}
+        <div className="bg-white rounded-3xl p-6 shadow border hover:shadow-xl transition-all">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <p className="text-gray-500 text-sm">
+                Total Spent
+              </p>
+
+              <h2 className="text-2xl font-bold mt-2 text-gray-900">
+                ₹{totalSpent}
+              </h2>
+            </div>
+
+            <div className="bg-purple-100 p-3 rounded-2xl">
+              <CreditCard className="w-8 h-8 text-purple-600" />
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg text-center">
-          <CreditCard className="w-10 h-10 text-purple-500 mx-auto mb-2" />
-          <p className="text-lg font-semibold">₹2,000</p>
-          <span className="text-gray-500 text-sm">Next Due</span>
-        </div>
-      </div>
+        {/* MEMBERSHIP STATUS */}
+        <div className="bg-white rounded-3xl p-6 shadow border hover:shadow-xl transition-all">
 
-      {/* Upcoming Sessions */}
-      <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Upcoming Sessions</h2>
-        <ul className="space-y-3">
-          <li className="flex justify-between items-center">
-            <span>07:00 AM - Yoga with Priya</span>
-            <span className="text-sm text-gray-500">Tomorrow</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span>06:00 PM - Strength Training with Arjun</span>
-            <span className="text-sm text-gray-500">Sep 8</span>
-          </li>
-          <li className="flex justify-between items-center">
-            <span>08:00 AM - Cardio Blast with Ramesh</span>
-            <span className="text-sm text-gray-500">Sep 9</span>
-          </li>
-        </ul>
-      </div>
+          <div className="flex items-center justify-between">
 
-      {/* Achievements / Progress */}
-      <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Your Progress</h2>
-        <div className="flex items-center space-x-6">
-          <Trophy className="w-16 h-16 text-yellow-500" />
-          <div>
-            <p className="text-lg font-semibold">Milestone Unlocked 🎉</p>
-            <p className="text-gray-600">You’ve completed 50 workouts!</p>
+            <div>
+
+              <p className="text-gray-500 text-sm">
+                Membership Status
+              </p>
+
+              <h2 className="text-2xl font-bold mt-2 capitalize text-gray-900">
+                {latestMembership?.status || "None"}
+              </h2>
+            </div>
+
+            <div
+              className={`p-3 rounded-2xl ${
+                latestMembership?.status === "active"
+                  ? "bg-green-100"
+                  : latestMembership?.status === "cancelled"
+                  ? "bg-red-100"
+                  : "bg-yellow-100"
+              }`}
+            >
+              <Activity
+                className={`w-8 h-8 ${
+                  latestMembership?.status === "active"
+                    ? "text-green-600"
+                    : latestMembership?.status === "cancelled"
+                    ? "text-red-600"
+                    : "text-yellow-600"
+                }`}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Payment History */}
-      <div className="bg-white rounded-2xl p-6 shadow hover:shadow-lg">
-        <h2 className="text-lg font-bold mb-4">Payment History</h2>
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="py-2">Date</th>
-              <th className="py-2">Plan</th>
-              <th className="py-2">Amount</th>
-              <th className="py-2">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b">
-              <td className="py-2">Aug 1, 2025</td>
-              <td className="py-2">Gold Plan</td>
-              <td className="py-2">₹2,000</td>
-              <td className="py-2 text-green-600 font-medium">Paid</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2">Jul 1, 2025</td>
-              <td className="py-2">Gold Plan</td>
-              <td className="py-2">₹2,000</td>
-              <td className="py-2 text-green-600 font-medium">Paid</td>
-            </tr>
-            <tr>
-              <td className="py-2">Jun 1, 2025</td>
-              <td className="py-2">Gold Plan</td>
-              <td className="py-2">₹2,000</td>
-              <td className="py-2 text-green-600 font-medium">Paid</td>
-            </tr>
-          </tbody>
-        </table>
+      {/* MEMBERSHIP ALERT */}
+      {latestMembership?.status === "cancelled" && (
+
+        <div className="bg-red-50 border border-red-200 rounded-3xl p-6 flex items-start gap-4">
+
+          <div className="bg-red-100 p-3 rounded-2xl">
+            <AlertTriangle className="text-red-600 w-8 h-8" />
+          </div>
+
+          <div>
+
+            <h2 className="text-xl font-bold text-red-700">
+              Membership Cancelled
+            </h2>
+
+            <p className="text-red-600 mt-2 leading-relaxed">
+              Your membership has been cancelled by the gym owner.
+              Please contact the administration for more information.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* MEMBERSHIP DETAILS */}
+      <div className="bg-white rounded-3xl shadow border p-6">
+
+        <div className="flex items-center justify-between mb-6">
+
+          <div>
+
+            <h2 className="text-2xl font-bold text-gray-900">
+              Membership Overview
+            </h2>
+
+            <p className="text-gray-500 mt-1">
+              Your current membership information.
+            </p>
+          </div>
+
+          <div className="bg-black text-white px-4 py-2 rounded-xl text-sm font-medium capitalize">
+            {latestMembership?.status || "No Membership"}
+          </div>
+        </div>
+
+        {latestMembership ? (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            <div className="bg-gray-50 rounded-2xl p-5 border">
+
+              <div className="flex items-center gap-3 mb-3">
+                <Dumbbell className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-semibold text-gray-800">
+                  Plan Name
+                </h3>
+              </div>
+
+              <p className="text-2xl font-bold text-gray-900 capitalize">
+                {latestMembership.name}
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-5 border">
+
+              <div className="flex items-center gap-3 mb-3">
+                <Clock3 className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-gray-800">
+                  Duration
+                </h3>
+              </div>
+
+              <p className="text-2xl font-bold text-gray-900">
+                {latestMembership.duration} Months
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-5 border">
+
+              <div className="flex items-center gap-3 mb-3">
+                <CalendarDays className="w-5 h-5 text-purple-600" />
+                <h3 className="font-semibold text-gray-800">
+                  Start Date
+                </h3>
+              </div>
+
+              <p className="text-xl font-bold text-gray-900">
+                {new Date(
+                  latestMembership.start
+                ).toLocaleDateString()}
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-2xl p-5 border">
+
+              <div className="flex items-center gap-3 mb-3">
+                <CreditCard className="w-5 h-5 text-pink-600" />
+                <h3 className="font-semibold text-gray-800">
+                  Expiry Date
+                </h3>
+              </div>
+
+              <p className="text-xl font-bold text-gray-900">
+                {new Date(
+                  latestMembership.end
+                ).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+
+        ) : (
+
+          <div className="text-center py-12">
+
+            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+
+            <h3 className="text-xl font-bold text-gray-800">
+              No Membership Found
+            </h3>
+
+            <p className="text-gray-500 mt-2">
+              Purchase a plan to activate your gym membership.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* PAYMENT HISTORY */}
+      <div className="bg-white rounded-3xl p-6 shadow border overflow-hidden">
+
+        <div className="flex items-center justify-between mb-6">
+
+          <div>
+
+            <h2 className="text-2xl font-bold text-gray-900">
+              Payment History
+            </h2>
+
+            <p className="text-gray-500 mt-1">
+              Track all your completed payments.
+            </p>
+          </div>
+
+          <div className="bg-gray-100 px-4 py-2 rounded-xl text-sm font-medium">
+            {payments.length} Payments
+          </div>
+        </div>
+
+        {payments.length === 0 ? (
+
+          <div className="text-center py-10 text-gray-500">
+            No payments found.
+          </div>
+
+        ) : (
+
+          <div className="overflow-x-auto">
+
+            <table className="w-full text-sm">
+
+              <thead className="bg-gray-100 text-gray-600">
+
+                <tr>
+                  <th className="text-left p-4">Date</th>
+                  <th className="text-left p-4">Plan</th>
+                  <th className="text-left p-4">Amount</th>
+                  <th className="text-left p-4">Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {payments.map((payment) => (
+
+                  <tr
+                    key={payment.id}
+                    className="border-t hover:bg-gray-50 transition"
+                  >
+
+                    <td className="p-4 text-gray-700">
+                      {payment.date}
+                    </td>
+
+                    <td className="p-4 font-medium text-gray-900">
+                      {payment.plan}
+                    </td>
+
+                    <td className="p-4 text-gray-700">
+                      ₹{payment.amount}
+                    </td>
+
+                    <td className="p-4">
+
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold capitalize">
+                        {payment.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* PROGRESS SECTION */}
+      <div className="bg-gradient-to-r from-black to-gray-800 rounded-3xl p-8 text-white shadow-xl">
+
+        <div className="flex items-center gap-5">
+
+          <div className="bg-white/10 p-5 rounded-3xl">
+            <Trophy className="w-16 h-16 text-yellow-400" />
+          </div>
+
+          <div>
+
+            <h2 className="text-3xl font-bold">
+              Keep Going 🚀
+            </h2>
+
+            <p className="text-gray-300 mt-2 max-w-2xl leading-relaxed">
+              Stay consistent with your workouts and membership activity.
+              Your fitness journey is being tracked in real time.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

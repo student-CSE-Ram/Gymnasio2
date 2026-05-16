@@ -1,9 +1,10 @@
 const Plan = require('../models/Plan');
 const Payment = require("../models/Payment");
+const Membership = require("../models/Membership");
 
 exports.createPlan = async (req,res) =>{
     try {
-        const {name, price,duration , features} = req.body;
+        const {name, price,durationInMonths , features} = req.body;
 
         const existingPlan = await Plan.findOne({name});
         
@@ -14,7 +15,7 @@ exports.createPlan = async (req,res) =>{
         const newPlan = new Plan({
             name:name,
             price:price,
-            duration,
+            durationInMonths,
             features
         })
 
@@ -44,11 +45,11 @@ exports.updatePlan = async (req,res) =>{
     try {
         const {name} = req.params;
 
-        const { price, duration ,features} = req.body;
+        const { price, durationInMonths ,features} = req.body;
 
         const updatedPlan = await Plan.findOneAndUpdate(
             {name :name},
-            {price, duration, features},
+            {price, durationInMonths, features},
             {new: true}
         );
 
@@ -103,53 +104,57 @@ exports.deletePlanById = async (req,res) =>{
     }
 }
 
+
 exports.getMyPlans = async (req, res) => {
+
   try {
+
     const userId = req.user.id;
 
-    // Fetch only successful payments
-    const payments = await Payment.find({
-      userId,
-      status: "paid",
+    const memberships = await Membership.find({
+      user: userId
     })
-      .populate("planId")
-      .sort({ createdAt: -1 });
+    .populate("plan")
+    .sort({ startDate: -1 });
 
-    const plans = payments.map((payment) => {
-      const plan = payment.planId;
+    const plans = memberships.map((membership) => {
+
+      const plan = membership.plan;
 
       if (!plan) return null;
 
-      // Start date = when payment succeeded
-      const startDate = payment.paidAt || payment.createdAt;
-
-      // duration is STRING → convert safely
-      const durationInMonths = Number(plan.duration);
-
-      if (isNaN(durationInMonths)) {
-        throw new Error(`Invalid duration for plan ${plan.name}`);
-      }
-
-      // Calculate end date
-      const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + durationInMonths);
-
-      const isActive = new Date() <= endDate;
-
       return {
-        paymentId: payment._id,
+
+        _id: membership._id,
+
         planId: plan._id,
+
         name: plan.name,
-        price: `₹${payment.amount / 100}`,
-        start: startDate,
-        end: endDate,
-        status: isActive ? "Active" : "Expired",
+
+        price: plan.price,
+
+        duration: plan.durationInMonths,
+
+        start: membership.startDate,
+
+        end: membership.endDate,
+
+        status: membership.status,
+
+        paymentStatus: membership.paymentStatus
       };
     }).filter(Boolean);
 
-    return res.status(200).json({ plans });
+    return res.status(200).json({
+      plans
+    });
+
   } catch (error) {
-    console.error("Error fetching my plans:", error);
-    return res.status(500).json({ msg: "Failed to fetch plans" });
+
+    console.error("Error fetching memberships:", error);
+
+    return res.status(500).json({
+      msg: "Failed to fetch memberships"
+    });
   }
 };

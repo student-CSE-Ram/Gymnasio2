@@ -32,7 +32,7 @@ const handleSubmit = async (e) => {
     localStorage.setItem(
       "user",
       JSON.stringify({
-        id: res.user._id,
+        id: res.user.id,
         name: res.user.name,
         role: res.user.role,
       })

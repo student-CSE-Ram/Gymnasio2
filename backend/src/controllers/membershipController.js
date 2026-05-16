@@ -40,10 +40,11 @@ exports.createMembership = async (req, res) => {
     }
 
     // Prevent duplicate active memberships
-    const existingMembership = await Membership.findOne({
-      user: userId,
-      status: "active"
-    });
+const existingMembership = await Membership.findOne({
+  user: userId,
+  status: { $in: ["active", "cancelled"] },
+  endDate: { $gt: new Date() }
+});
 
     if (existingMembership) {
       return res.status(400).json({
@@ -52,13 +53,14 @@ exports.createMembership = async (req, res) => {
     }
 
     // Calculate expiry date
-    const days = plan.duration;
+    const days = plan.durationInMonths;
 
     const startDate = new Date();
 
     const endDate = new Date();
-    endDate.setDate(startDate.getDate() + days);
-
+endDate.setMonth(
+  startDate.getMonth() + plan.durationInMonths
+);
     // Create membership
     const membership = new Membership({
       user: userId,
@@ -66,7 +68,7 @@ exports.createMembership = async (req, res) => {
       startDate,
       endDate,
       status: "active",
-      paymentStatus: "pending"
+      paymentStatus: "paid"
     });
 
     await membership.save();
@@ -74,7 +76,7 @@ exports.createMembership = async (req, res) => {
     // Populate response
     const populatedMembership = await Membership.findById(membership._id)
       .populate("user", "name email")
-      .populate("plan", "name duration price");
+      .populate("plan", "name durationInMonths price");
 
     return res.status(201).json({
       msg: "Membership created successfully",
@@ -99,7 +101,7 @@ exports.getMembership = async (req, res) => {
 
     const populatedMembership = await Membership.find()
       .populate("user", "name email")
-      .populate("plan", "name duration price")
+      .populate("plan", "name durationInMonths price")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
@@ -141,5 +143,76 @@ exports.expireMemberships = async () => {
     console.error("Error expiring memberships", error);
 
     throw error;
+  }
+};
+
+exports.cancelMembership = async (req, res) => {
+
+  try {
+
+    const { membershipId } = req.params;
+
+    const membership = await Membership.findById(membershipId);
+
+    if (!membership) {
+      return res.status(404).json({
+        msg: "Membership not found"
+      });
+    }
+
+    membership.status = "cancelled";
+
+    await membership.save();
+
+    return res.status(200).json({
+      msg: "Membership cancelled successfully"
+    });
+
+  } catch (error) {
+
+    console.error("Error cancelling membership", error);
+
+    return res.status(500).json({
+      msg: "Internal server error"
+    });
+  }
+};
+exports.reactivateMembership = async (req, res) => {
+
+  try {
+
+    const { membershipId } = req.params;
+
+    const membership = await Membership.findById(membershipId);
+
+    if (!membership) {
+
+      return res.status(404).json({
+        msg: "Membership not found"
+      });
+    }
+
+    if (membership.status !== "cancelled") {
+
+      return res.status(400).json({
+        msg: "Only cancelled memberships can be reactivated"
+      });
+    }
+
+    membership.status = "active";
+
+    await membership.save();
+
+    return res.status(200).json({
+      msg: "Membership reactivated successfully"
+    });
+
+  } catch (error) {
+
+    console.error("Error reactivating membership", error);
+
+    return res.status(500).json({
+      msg: "Internal server error"
+    });
   }
 };

@@ -12,7 +12,7 @@ const planSchema = new mongoose.Schema({
         required : true
     },
 
-    duration: {
+    durationInMonths: {
         type:Number,
         required: true
     },

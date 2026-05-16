@@ -2,6 +2,7 @@ const razorpay = require("../config/razorpay");
 const Payment = require("../models/Payment");
 const Plan = require("../models/Plan");
 const User = require("../models/User"); // Only if you want member name
+const Membership = require("../models/Membership");
 
 
 exports.createOrder = async (req, res) => {
@@ -18,12 +19,32 @@ exports.createOrder = async (req, res) => {
     // 2. Amount calculation (source of truth)
     const amount = plan.price * 100; // paise
 
+const existingMembership = await Membership.findOne({
+  user: userId,
+  $or: [
+    {
+      status: "active",
+      endDate: { $gt: new Date() }
+    },
+    {
+      status: "cancelled"
+    }
+  ]
+});
+
+if (existingMembership) {
+
+  return res.status(400).json({
+    msg: "You already have an active membership"
+  });
+}
     // 3. Create Razorpay order
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     });
+    
 
     // 4. Save payment attempt
     await Payment.create({

@@ -13,13 +13,13 @@ export default function ManagePlans() {
   const [editForm, setEditForm] = useState({
     name: "",
     price: "",
-    duration: "",
+    durationInMonths: "",
     features: "",
   });
   const [newPlan, setNewPlan] = useState({
     name: "",
     price: "",
-    duration: "",
+    durationInMonths: "",
     features: "",
   });
   const [loading, setLoading] = useState(false);
@@ -64,7 +64,7 @@ export default function ManagePlans() {
     setEditForm({
       name: plan.name,
       price: plan.price,
-      duration: plan.duration || "",
+      durationInMonths: plan.durationInMonths || "",
       features: plan.features?.join(", ") || "",
     });
   };
@@ -74,7 +74,7 @@ export default function ManagePlans() {
     try {
       await updatePlan(editingPlan, {
         price: parseInt(editForm.price),
-        duration: editForm.duration,
+        durationInMonths: editForm.durationInMonths,
         features: editForm.features.split(",").map((f) => f.trim()),
       });
       setEditingPlan(null);
@@ -86,20 +86,20 @@ export default function ManagePlans() {
 
   // Create new plan
   const handleAddPlan = async () => {
-    if (!newPlan.name || !newPlan.price || !newPlan.duration) {
-      alert("Please enter plan name, price, and duration");
+    if (!newPlan.name || !newPlan.price || !newPlan.durationInMonths) {
+      alert("Please enter plan name, price, and durationInMonths");
       return;
     }
     try {
       await createPlan({
         name: newPlan.name,
         price: parseInt(newPlan.price),
-        duration: newPlan.duration,
+        durationInMonths: newPlan.durationInMonths,
         features: newPlan.features
           ? newPlan.features.split(",").map((f) => f.trim())
           : [],
       });
-      setNewPlan({ name: "", price: "", duration: "", features: "" });
+      setNewPlan({ name: "", price: "", durationInMonths: "", features: "" });
       fetchPlans();
     } catch (error) {
       console.error("Error creating plan:", error);
@@ -133,9 +133,9 @@ export default function ManagePlans() {
         <input
           type="text"
           className="border p-2 w-full mb-2"
-          placeholder="Duration (e.g. 1 month)"
-          value={newPlan.duration}
-          onChange={(e) => setNewPlan({ ...newPlan, duration: e.target.value })}
+          placeholder="durationInMonths (e.g. 1 month)"
+          value={newPlan.durationInMonths}
+          onChange={(e) => setNewPlan({ ...newPlan, durationInMonths: e.target.value })}
         />
         <textarea
           className="border p-2 w-full mb-2"
@@ -172,10 +172,10 @@ export default function ManagePlans() {
           <input
             type="text"
             className="border p-2 w-full mb-2"
-            placeholder="Duration"
-            value={editForm.duration}
+            placeholder="durationInMonths"
+            value={editForm.durationInMonths}
             onChange={(e) =>
-              setEditForm({ ...editForm, duration: e.target.value })
+              setEditForm({ ...editForm, durationInMonths: e.target.value })
             }
           />
           <textarea
