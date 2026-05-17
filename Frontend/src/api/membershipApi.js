@@ -1,36 +1,18 @@
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
-const API = "http://localhost:5000/api/membership";
-
+// Create membership
 export const createMembership = async (data) => {
-
-  const token = localStorage.getItem("token");
-
-  const res = await axios.post(
-    `${API}/create`,
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+  const res = await axiosInstance.post(
+    "/membership/create",
+    data
   );
 
   return res.data;
 };
 
+// Get logged-in user's memberships
 export const getMyMemberships = async () => {
-
-  const token = localStorage.getItem("token");
-
-  const res = await axios.get(
-    `${API}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const res = await axiosInstance.get("/membership");
 
   return res.data;
 };
