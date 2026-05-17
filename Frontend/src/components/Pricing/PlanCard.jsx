@@ -15,7 +15,7 @@ export default function PlanCard({
 
       <p className="text-4xl font-semibold mb-4">
         ₹{plan.price}
-        <span className="text-lg font-normal">/month</span>
+        {/* <span className="text-lg font-normal"></span> */}
       </p>
 
       <ul className="mb-6 space-y-4 py-6 text-gray-700 flex-1">

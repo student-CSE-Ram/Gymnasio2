@@ -14,35 +14,53 @@ const paymentRoutes = require("./src/routes/payment");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://gymnasio-one.vercel.app",
+];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    console.log("Incoming origin:", origin);
+  origin: function (origin, callback) {
 
-    // allow Postman / curl / same-origin
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "http://192.168.0.0", // placeholder, won't match directly
-    ];
-
-    // 🔥 allow ANY local network IP (this is your real problem solver)
-    const isLocalNetwork =
-      origin.startsWith("http://192.168.") ||
-      origin.startsWith("http://10.") ||
-      origin.startsWith("http://172.");
-
-    if (allowedOrigins.includes(origin) || isLocalNetwork) {
+    // Allow requests with no origin
+    // (Postman, mobile apps, curl, server-to-server)
+    if (!origin) {
       return callback(null, true);
     }
 
-    console.log("Blocked by CORS:", origin);
+    // Normalize origin
+    const normalizedOrigin = origin.trim().replace(/\/$/, "");
+
+    // Allow local network testing
+    const isLocalNetwork =
+      /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(normalizedOrigin) ||
+      /^http:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(normalizedOrigin) ||
+      /^http:\/\/172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+(:\d+)?$/.test(normalizedOrigin);
+
+    if (
+      allowedOrigins.includes(normalizedOrigin) ||
+      isLocalNetwork
+    ) {
+      console.log("✅ Allowed Origin:", normalizedOrigin);
+      return callback(null, true);
+    }
+
+    console.log("❌ Blocked by CORS:", normalizedOrigin);
+
     return callback(new Error("Not allowed by CORS"));
   },
+
   credentials: true,
+
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
 }));
+
 
 app.use(express.json());
 

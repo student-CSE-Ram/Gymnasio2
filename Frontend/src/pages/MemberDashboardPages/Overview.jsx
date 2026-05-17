@@ -130,7 +130,7 @@ const remainingDays =
         <div>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.name} 👋
+            Welcome, {user?.name} 👋
           </h1>
 
           <p className="text-gray-500 mt-1">
