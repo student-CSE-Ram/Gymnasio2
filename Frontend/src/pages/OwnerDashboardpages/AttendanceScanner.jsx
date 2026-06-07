@@ -22,6 +22,7 @@ export default function AttendanceScanner() {
     scanner.render(
 
       async (decodedText) => {
+        console.log("QR DETECTED:", decodedText);
 
         // Prevent same QR being scanned repeatedly
         if (decodedText === lastScan) {
@@ -65,21 +66,26 @@ export default function AttendanceScanner() {
 
         } catch (error) {
 
-          setMessage(
-            error.response?.data?.msg ||
-            "Scan Failed"
-          );
+  console.log(
+    "SCAN ERROR:",
+    error.response?.data
+  );
 
-          setTimeout(() => {
+  setMessage(
+    error.response?.data?.msg ||
+    "Scan Failed"
+  );
 
-            setMessage("");
+  setTimeout(() => {
 
-            setLastScan(null);
+    setMessage("");
 
-            setIsProcessing(false);
+    setLastScan(null);
 
-          }, 5000);
-        }
+    setIsProcessing(false);
+
+  }, 5000);
+}
       },
 
       (error) => {
