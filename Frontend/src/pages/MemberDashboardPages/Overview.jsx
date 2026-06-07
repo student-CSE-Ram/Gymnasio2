@@ -10,8 +10,8 @@ import {
   User,
   Clock3,
   AlertTriangle,
+  X
 } from "lucide-react";
-
 import { getMyMemberships } from "../../api/membershipApi";
 import { getMyPayments } from "../../api/paymentApi";
 
@@ -21,6 +21,7 @@ const [memberships, setMemberships] = useState([]);
   const [payments, setPayments] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -125,30 +126,35 @@ const remainingDays =
     <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <div>
+  <div>
+    <h1 className="text-3xl font-bold text-gray-900">
+      Welcome, {user?.name} 👋
+    </h1>
 
-          <h1 className="text-3xl font-bold text-gray-900">
-            Welcome, {user?.name} 👋
-          </h1>
+    <p className="text-gray-500 mt-1">
+      Here’s your real-time fitness dashboard overview.
+    </p>
+  </div>
 
-          <p className="text-gray-500 mt-1">
-            Here’s your real-time fitness dashboard overview.
-          </p>
-        </div>
+<div className="flex items-center gap-4">
 
-        <div className="bg-black text-white px-5 py-3 rounded-2xl shadow-lg">
+  <div className="bg-black text-white px-5 py-3 rounded-2xl shadow-lg">
 
-          <p className="text-sm text-gray-300">
-            Current Membership
-          </p>
+    <p className="text-sm text-gray-300">
+      Current Membership
+    </p>
 
-          <h2 className="text-xl font-bold mt-1 capitalize">
-            {latestMembership?.status || "No Membership"}
-          </h2>
-        </div>
-      </header>
+    <h2 className="text-xl font-bold mt-1 capitalize">
+      {latestMembership?.status || "No Membership"}
+    </h2>
+
+  </div>
+
+</div>
+
+</header>
 
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -488,4 +494,5 @@ const remainingDays =
       </div>
     </div>
   );
+  
 }

@@ -19,6 +19,11 @@ const menuConfig = {
     { name: "Manage Members", to: "manage-members", icon: <Users size={20} /> },
     { name: "Manage Trainers", to: "manage-trainers", icon: <Dumbbell size={20} /> },
     { name: "Attendance", to: "attendance", icon: <CalendarCheck size={20} /> },
+    {
+  name: "Scanner",
+  to: "attendance-scanner",
+  icon: <CalendarCheck size={20} />
+},
     { name: "Manage Payments", to: "manage-payments", icon: <CreditCard size={20} /> },
     { name: "Membership", to: "membership", icon: <UserCheck size={20} /> },
     { name: "Manage Plans", to: "manage-plans", icon: <ClipboardList size={20} /> },
@@ -71,9 +76,9 @@ export default function Sidebar({ role }) {
           alt="Gymnasio Logo"
           className="w-12 h-12 rounded-full"
         />
-        <span className="text-2xl font-bold text-amber-600">
-          Gymnasio
-        </span>
+        <span className="hidden lg:block text-2xl font-bold text-amber-600">
+  Gymnasio
+</span>
       </Link>
 
       {/* Navigation */}
@@ -86,14 +91,16 @@ export default function Sidebar({ role }) {
             <Link
               key={index}
               to={fullPath}
-              className={`flex items-center space-x-3 p-2 rounded-lg transition-colors ${
+              className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
                 isActive
                   ? "bg-gray-700 text-white"
                   : "hover:bg-gray-700"
               }`}
             >
               {item.icon}
-              <span>{item.name}</span>
+              <span className="font-medium">
+  {item.name}
+</span>
             </Link>
           );
         })}
@@ -103,7 +110,7 @@ export default function Sidebar({ role }) {
       <div className="pt-4 border-t border-gray-700">
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-3 p-2 w-full rounded-lg text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
+          className="flex items-center space-x-3 p-3 w-full rounded-xl text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
         >
           <LogOut size={20} />
           <span>Logout</span>

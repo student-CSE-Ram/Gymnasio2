@@ -34,6 +34,9 @@ const membershipSchema = new mongoose.Schema({
     enum: ["pending", "paid"],
     default: "pending"
   }
+},
+{
+  timestamps: true
 });
 
 module.exports = mongoose.model("Membership", membershipSchema);

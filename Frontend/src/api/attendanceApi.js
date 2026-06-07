@@ -33,3 +33,10 @@ export const getMemberAttendance = async () => {
   const res = await axiosInstance.get("/attendance/member");
   return res.data;
 };
+export const getAttendanceStats = async () => {
+  const res = await axiosInstance.get(
+    "/member-attendance/stats"
+  );
+
+  return res.data;
+};

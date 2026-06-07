@@ -15,4 +15,4 @@ export const getMyMemberships = async () => {
   const res = await axiosInstance.get("/membership");
 
   return res.data;
-};
+};  

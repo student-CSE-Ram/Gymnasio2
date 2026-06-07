@@ -4,7 +4,13 @@ const Membership = require("../models/Membership");
 
 exports.createPlan = async (req,res) =>{
     try {
-        const {name, price,durationInMonths , features} = req.body;
+        const {
+    name,
+    price,
+    durationInMonths,
+    dailyCheckinLimit,
+    features
+} = req.body;
 
         const existingPlan = await Plan.findOne({name});
         
@@ -12,12 +18,13 @@ exports.createPlan = async (req,res) =>{
             return res.status(400).json({msg:"Plan already exist"})
         }
 
-        const newPlan = new Plan({
-            name:name,
-            price:price,
-            durationInMonths,
-            features
-        })
+       const newPlan = new Plan({
+    name,
+    price,
+    durationInMonths,
+    dailyCheckinLimit,
+    features
+});
 
         await newPlan.save();
 
@@ -45,13 +52,23 @@ exports.updatePlan = async (req,res) =>{
     try {
         const {name} = req.params;
 
-        const { price, durationInMonths ,features} = req.body;
+        const {
+    price,
+    durationInMonths,
+    dailyCheckinLimit,
+    features
+} = req.body;
 
         const updatedPlan = await Plan.findOneAndUpdate(
-            {name :name},
-            {price, durationInMonths, features},
-            {new: true}
-        );
+    { name },
+    {
+        price,
+        durationInMonths,
+        dailyCheckinLimit,
+        features
+    },
+    { new: true }
+);
 
         if (!updatedPlan) {
             return res.status(404).json({msg:"Cannot find the plan"});

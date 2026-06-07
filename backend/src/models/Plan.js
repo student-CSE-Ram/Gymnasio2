@@ -16,14 +16,22 @@ const planSchema = new mongoose.Schema({
         type:Number,
         required: true
     },
+
+    dailyCheckinLimit: {
+        type: Number,
+        required: true,
+        default: 1
+    },
+
     features: {
-        type: [String],   // array of strings
+        type: [String],
         required: true
     },
+
     createdAt: {
         type: Date,
         default: Date.now,
     }
 });
 
-module.exports = mongoose.model("Plan",planSchema)
+module.exports = mongoose.model("Plan",planSchema);

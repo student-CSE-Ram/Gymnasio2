@@ -13,6 +13,8 @@ import Reports from "../OwnerDashboardpages/Reports";
 import MembershipTracker from "../OwnerDashboardpages/Membership";
 import SettingsPage from "./SettingPage";
 import AttendancePage from "../OwnerDashboardpages/Attendance";
+import AttendanceScanner
+from "../OwnerDashboardpages/AttendanceScanner";
 
 export default function OwnerDashboard() {
  
@@ -33,6 +35,10 @@ export default function OwnerDashboard() {
             <Route path="membership" element={<MembershipTracker />} />
             <Route path="reports" element={<Reports />} />
             <Route path="attendance" element={<AttendancePage user={{ role: "owner" }} />} />
+            <Route
+  path="attendance-scanner"
+  element={<AttendanceScanner />}
+/>
             <Route path="settings" element={<SettingsPage role="owner" />} />
             <Route path="*" element={<Overview />} />
           </Routes>

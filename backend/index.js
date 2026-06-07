@@ -9,8 +9,9 @@ const planRoutes = require('./src/routes/plan')
 const membershipRoute = require('./src/routes/membershipRoute')
 const classRoutes = require('./src/routes/classRoutes')
 const progressRoutes = require('./src/routes/progressRoutes')
-const attendanceRoutes = require("./src/routes/Attendance")
+const MemberAttendance = require('./src/routes/MemberAttendance')
 const paymentRoutes = require("./src/routes/payment");
+const profileroute = require('./src/routes/profile');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -68,6 +69,7 @@ connectDB();
 
 
 app.use('/api/auth',authUser);
+app.use("/api/users", profileroute);
 app.use('/api/ownerwork',userroutes);
 
 app.use('/api/plan',planRoutes)
@@ -76,14 +78,11 @@ app.use('/api/membership',membershipRoute)
 app.use('/api/class',classRoutes)
 app.use('/api/progress',progressRoutes)
 
-app.use("/api/attendance", attendanceRoutes);
+app.use("/api/member-attendance", MemberAttendance);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/training-sessions", require("./src/routes/trainingRoutes"));
 
 app.use("/api/owner-dashboard", require("./src/routes/ownerDashboard"));
-
-
-
 
 
 app.listen(PORT,()=>{
