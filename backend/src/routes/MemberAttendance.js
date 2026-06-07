@@ -4,7 +4,7 @@ const router = express.Router();
 const {
   scanAttendance,
   getAttendanceStats
-} = require("../controllers/memberAttendanceController");
+} = require("../controllers/MemberAttendanceController");
 const {authMiddleware} = require('../middleware/authMiddleware')
 
 router.post("/scan", scanAttendance);
