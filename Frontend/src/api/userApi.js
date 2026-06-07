@@ -1,19 +1,11 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL_LOCAL;
+import axiosInstance from "./axiosInstance";
 
 export const getMyProfile = async () => {
 
-  const token = localStorage.getItem("token");
-
-  const response = await axios.get(
-    `${API_URL}/api/users/me`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
+  const response =
+    await axiosInstance.get(
+      "/users/me"
+    );
 
   return response.data;
 };
