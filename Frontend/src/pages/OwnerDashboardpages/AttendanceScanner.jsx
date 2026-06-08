@@ -5,6 +5,7 @@ import axiosInstance from "../../api/axiosInstance";
 export default function AttendanceScanner() {
 
   const [message, setMessage] = useState("");
+  const [scanStatus, setScanStatus] = useState("");
 const isProcessingRef = useRef(false);
 const lastScanRef = useRef(null);
 
@@ -23,6 +24,7 @@ const lastScanRef = useRef(null);
 
       async (decodedText) => {
         console.log("QR DETECTED:", decodedText);
+        setScanStatus("QR Detected");
 
 if (decodedText === lastScanRef.current) {
   return;
@@ -34,8 +36,8 @@ if (isProcessingRef.current) {
 
 lastScanRef.current = decodedText;
 isProcessingRef.current = true;
-setMessage("Checking attendance...");
-        try {
+setScanStatus("Checking Attendance...");
+try {
 
           const response =
             await axiosInstance.post(
@@ -45,7 +47,7 @@ setMessage("Checking attendance...");
               }
             );
 
-          setMessage(response.data.msg);
+          setScanStatus(response.data.msg);
 
 setTimeout(() => {
 
@@ -69,11 +71,11 @@ const errorMessage =
   error?.message ||
   "Something went wrong";
 
-setMessage(errorMessage);
+setScanStatus(errorMessage);
 
 setTimeout(() => {
 
-  setMessage("");
+  setScanStatus("");
 
   lastScanRef.current = null;
 
@@ -110,6 +112,35 @@ setTimeout(() => {
         id="reader"
         className="max-w-lg mx-auto"
       />
+      {scanStatus && (
+
+  <div className="mt-4 text-center">
+
+    <div
+      className={`
+        inline-block
+        px-6
+        py-3
+        rounded-xl
+        font-semibold
+        text-lg
+
+        ${
+          scanStatus.toLowerCase().includes("successful")
+            ? "bg-green-100 text-green-700"
+            : scanStatus.toLowerCase().includes("cannot") ||
+              scanStatus.toLowerCase().includes("error")
+            ? "bg-red-100 text-red-700"
+            : "bg-blue-100 text-blue-700"
+        }
+      `}
+    >
+      {scanStatus}
+    </div>
+
+  </div>
+
+)}
 
       {message && (
         <div className="mt-6 text-center">
