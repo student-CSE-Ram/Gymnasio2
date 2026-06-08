@@ -1,152 +1,234 @@
-  import React, { useEffect, useState, useRef } from "react";
-  import { Html5QrcodeScanner } from "html5-qrcode";
-  import axiosInstance from "../../api/axiosInstance";
+import React, { useEffect, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
+import axiosInstance from "../../api/axiosInstance";
 
-  export default function AttendanceScanner() {
+export default function AttendanceScanner() {
 
-  const [scanStatus, setScanStatus] = useState("Ready to Scan");
-    const isProcessingRef = useRef(false);
-  const lastScanRef = useRef(null);
+  const [scanStatus, setScanStatus] =
+    useState("Ready to Scan");
 
-    useEffect(() => {
+  const isProcessingRef =
+    useRef(false);
 
-      const scanner = new Html5QrcodeScanner(
-        "reader",
-        {
-          fps: 10,
-          qrbox: 250,
-        },
-        false
-      );
-  let qrTimeout = setTimeout(() => {
+  const lastScanRef =
+    useRef(null);
 
-    setScanStatus("QR Not Detected");
+  useEffect(() => {
 
-  }, 5000);
-      scanner.render(
+    let html5QrCode;
 
-        async (decodedText) => {
-          clearTimeout(qrTimeout);
+    const startScanner =
+      async () => {
 
-  setScanStatus("QR Detected");
+        const reader =
+          document.getElementById(
+            "reader"
+          );
 
-          console.log("QR DETECTED:", decodedText);
-          setScanStatus("QR Detected");
-
-  if (decodedText === lastScanRef.current) {
-    return;
-  }
-
-  if (isProcessingRef.current) {
-    return;
-  }
-
-  lastScanRef.current = decodedText;
-  isProcessingRef.current = true;
-  setScanStatus("Checking Attendance...");
-  try {
-
-            const response =
-              await axiosInstance.post(
-                "/member-attendance/scan",
-                {
-                  memberId: decodedText
-                }
-              );
-
-            setScanStatus(response.data.msg);
-
-  setTimeout(() => {
-
-    setScanStatus("Ready to Scan");
-
-    lastScanRef.current = null;
-
-    isProcessingRef.current = false;
-
-    qrTimeout = setTimeout(() => {
-
-      setScanStatus("QR Not Detected");
-
-    }, 5000);
-
-  }, 3000);
-          } catch (error) {
-
-    console.log(
-      "SCAN ERROR:",
-      error.response?.data
-    );
-
-  const errorMessage =
-    error?.response?.data?.msg ||
-    error?.message ||
-    "Something went wrong";
-
-  setScanStatus(errorMessage);
-
-setTimeout(() => {
-
-  setScanStatus("Ready to Scan");
-
-  lastScanRef.current = null;
-
-  isProcessingRef.current = false;
-
-}, 3000);
-  }
-        },
-
-        (error) => {
-          // ignore scan errors
+        if (!reader) {
+          return;
         }
 
-      );
+        try {
 
-      return () => {
+          html5QrCode =
+            new Html5Qrcode(
+              "reader"
+            );
 
-        scanner
-          .clear()
-          .catch(() => {});
+          const devices =
+            await Html5Qrcode.getCameras();
 
+          if (
+            !devices ||
+            devices.length === 0
+          ) {
+
+            setScanStatus(
+              "No Camera Found"
+            );
+
+            return;
+          }
+
+          await html5QrCode.start(
+
+            { facingMode: "environment" },
+
+            {
+              fps: 5,
+              qrbox: {
+                width: 250,
+                height: 250,
+              },
+            },
+
+            async (decodedText) => {
+
+              if (
+                decodedText ===
+                lastScanRef.current
+              ) {
+                return;
+              }
+
+              if (
+                isProcessingRef.current
+              ) {
+                return;
+              }
+
+              lastScanRef.current =
+                decodedText;
+
+              isProcessingRef.current =
+                true;
+
+              setScanStatus(
+                "QR Detected"
+              );
+
+              try {
+
+                setScanStatus(
+                  "Checking Attendance..."
+                );
+
+                const response =
+                  await axiosInstance.post(
+                    "/member-attendance/scan",
+                    {
+                      memberId:
+                        decodedText,
+                    }
+                  );
+
+                setScanStatus(
+                  response.data.msg
+                );
+
+              } catch (error) {
+
+                const errorMessage =
+                  error?.response?.data
+                    ?.msg ||
+                  "Scan Failed";
+
+                setScanStatus(
+                  errorMessage
+                );
+              }
+
+              setTimeout(() => {
+
+                setScanStatus(
+                  "Ready to Scan"
+                );
+
+                lastScanRef.current =
+                  null;
+
+                isProcessingRef.current =
+                  false;
+
+              }, 3000);
+            },
+
+            () => {
+              // Ignore scan failures
+            }
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Scanner Start Error:",
+            error
+          );
+
+          setScanStatus(
+            "Camera Failed To Start"
+          );
+        }
       };
 
-    }, []);
+    const timer =
+      setTimeout(
+        startScanner,
+        500
+      );
 
-    return (
-      <div className="p-6">
+    return () => {
 
-        <h1 className="text-3xl font-bold mb-6">
-          Attendance Scanner
-        </h1>
+      clearTimeout(timer);
+
+      if (html5QrCode) {
+
+        html5QrCode
+          .stop()
+          .then(() =>
+            html5QrCode.clear()
+          )
+          .catch(() => {});
+      }
+    };
+
+  }, []);
+
+  return (
+    <div className="p-6">
+
+      <h1 className="text-3xl font-bold mb-6">
+        Attendance Scanner
+      </h1>
+
+      <div
+        id="reader"
+        className="
+          w-full
+          max-w-lg
+          mx-auto
+          rounded-xl
+          overflow-hidden
+          border
+          bg-white
+        "
+      />
+
+      <div className="mt-6 text-center">
 
         <div
-          id="reader"
-          className="max-w-lg mx-auto"
-        />
-        <div className="mt-4 text-center">
-
-    <div
-      className={`inline-block px-6 py-3 rounded-xl font-semibold
-      ${
-        scanStatus.includes("successful")
-          ? "bg-green-100 text-green-700"
-          : scanStatus.includes("Detected")
-          ? "bg-blue-100 text-blue-700"
-          : scanStatus.includes("Checking")
-          ? "bg-yellow-100 text-yellow-700"
-          : scanStatus.includes("Not Detected")
-          ? "bg-red-100 text-red-700"
-          : "bg-gray-100 text-gray-700"
-      }`}
-    >
-      {scanStatus}
-    </div>
-
-  </div>
-
-
+          className={`inline-block px-6 py-3 rounded-xl font-semibold ${
+            scanStatus.includes(
+              "successful"
+            )
+              ? "bg-green-100 text-green-700"
+              : scanStatus.includes(
+                  "Detected"
+                )
+              ? "bg-blue-100 text-blue-700"
+              : scanStatus.includes(
+                  "Checking"
+                )
+              ? "bg-yellow-100 text-yellow-700"
+              : scanStatus.includes(
+                  "Failed"
+                ) ||
+                scanStatus.includes(
+                  "Cannot"
+                ) ||
+                scanStatus.includes(
+                  "No Camera"
+                )
+              ? "bg-red-100 text-red-700"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {scanStatus}
+        </div>
 
       </div>
-    );
-  }
+
+    </div>
+  );
+}
