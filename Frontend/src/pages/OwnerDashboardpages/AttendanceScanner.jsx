@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import axiosInstance from "../../api/axiosInstance";
 
 export default function AttendanceScanner() {
 
   const [message, setMessage] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [lastScan, setLastScan] = useState(null);
+const isProcessingRef = useRef(false);
+const lastScanRef = useRef(null);
 
   useEffect(() => {
 
@@ -24,19 +24,17 @@ export default function AttendanceScanner() {
       async (decodedText) => {
         console.log("QR DETECTED:", decodedText);
 
-        // Prevent same QR being scanned repeatedly
-        if (decodedText === lastScan) {
-          return;
-        }
+if (decodedText === lastScanRef.current) {
+  return;
+}
 
-        // Prevent multiple API calls while processing
-        if (isProcessing) {
-          return;
-        }
+if (isProcessingRef.current) {
+  return;
+}
 
-        setLastScan(decodedText);
-        setIsProcessing(true);
-
+lastScanRef.current = decodedText;
+isProcessingRef.current = true;
+setMessage("Checking attendance...");
         try {
 
           const response =
@@ -49,20 +47,15 @@ export default function AttendanceScanner() {
 
           setMessage(response.data.msg);
 
-          // Pause scanner for 5 seconds
-          scanner.pause(true);
+setTimeout(() => {
 
-          setTimeout(() => {
+  setMessage("");
 
-            scanner.resume();
+  lastScanRef.current = null;
 
-            setMessage("");
+  isProcessingRef.current = false;
 
-            setLastScan(null);
-
-            setIsProcessing(false);
-
-          }, 5000);
+}, 3000);
 
         } catch (error) {
 
@@ -71,20 +64,22 @@ export default function AttendanceScanner() {
     error.response?.data
   );
 
-  setMessage(
-    error.response?.data?.msg ||
-    "Scan Failed"
-  );
+const errorMessage =
+  error?.response?.data?.msg ||
+  error?.message ||
+  "Something went wrong";
 
-  setTimeout(() => {
+setMessage(errorMessage);
 
-    setMessage("");
+setTimeout(() => {
 
-    setLastScan(null);
+  setMessage("");
 
-    setIsProcessing(false);
+  lastScanRef.current = null;
 
-  }, 5000);
+  isProcessingRef.current = false;
+
+}, 3000);
 }
       },
 

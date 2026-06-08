@@ -93,24 +93,40 @@ endDate.setMonth(
   }
 };
 
-exports.getMembership = async (req, res) => {
+exports.getAllMemberships = async (req, res) => {
+
+  const memberships = await Membership.find()
+    .populate("user", "name email")
+    .populate("plan", "name durationInMonths price")
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json({
+    membership: memberships
+  });
+};
+exports.getMyMemberships = async (req, res) => {
 
   try {
 
-    await exports.expireMemberships();
-
-    const populatedMembership = await Membership.find()
-      .populate("user", "name email")
-      .populate("plan", "name durationInMonths price")
-      .sort({ createdAt: -1 });
+    const memberships =
+      await Membership.find({
+        user: req.user._id
+      })
+      .populate(
+        "plan",
+        "name durationInMonths price dailyCheckinLimit"
+      )
+      .sort({
+        createdAt: -1
+      });
 
     return res.status(200).json({
-      membership: populatedMembership
+      membership: memberships
     });
 
   } catch (error) {
 
-    console.error("Error fetching memberships", error);
+    console.error(error);
 
     return res.status(500).json({
       msg: "Internal server error"

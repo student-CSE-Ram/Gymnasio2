@@ -12,7 +12,7 @@ export const createMembership = async (data) => {
 
 // Get logged-in user's memberships
 export const getMyMemberships = async () => {
-  const res = await axiosInstance.get("/membership");
+  const res = await axiosInstance.get("membership/my-memberships");
 
   return res.data;
 };  

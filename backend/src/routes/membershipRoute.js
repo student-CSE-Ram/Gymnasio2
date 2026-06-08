@@ -5,7 +5,8 @@ const {roleMiddleware} = require("../middleware/roleMiddleware");
 
 const {
   createMembership,
-  getMembership,
+  getAllMemberships,
+  getMyMemberships,
   cancelMembership,
   reactivateMembership,
 } = require("../controllers/membershipController");
@@ -21,7 +22,12 @@ router.post(
 router.get(
   "/",
   authMiddleware,
-  getMembership
+  getAllMemberships
+);
+router.get(
+  "/my-memberships",
+  authMiddleware,
+  getMyMemberships
 );
 router.put(
   "/cancel/:membershipId",
