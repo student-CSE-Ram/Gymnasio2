@@ -11,17 +11,19 @@ export default function ManagePlans() {
   const [plans, setPlans] = useState([]);
   const [editingPlan, setEditingPlan] = useState(null);
   const [editForm, setEditForm] = useState({
-    name: "",
-    price: "",
-    durationInMonths: "",
-    features: "",
-  });
+  name: "",
+  price: "",
+  durationInMonths: "",
+  dailyCheckinLimit: "",
+  features: "",
+});
   const [newPlan, setNewPlan] = useState({
-    name: "",
-    price: "",
-    durationInMonths: "",
-    features: "",
-  });
+  name: "",
+  price: "",
+  durationInMonths: "",
+  dailyCheckinLimit: "",
+  features: "",
+});
   const [loading, setLoading] = useState(false);
 
   // ✅ Fetch all plans (safe for both response formats)
@@ -62,21 +64,25 @@ export default function ManagePlans() {
   const handleEdit = (plan) => {
     setEditingPlan(plan.name);
     setEditForm({
-      name: plan.name,
-      price: plan.price,
-      durationInMonths: plan.durationInMonths || "",
-      features: plan.features?.join(", ") || "",
-    });
+  name: plan.name,
+  price: plan.price,
+  durationInMonths: plan.durationInMonths || "",
+  dailyCheckinLimit: plan.dailyCheckinLimit || "",
+  features: plan.features?.join(", ") || "",
+});
   };
 
   // Save edited plan
   const handleSave = async () => {
     try {
       await updatePlan(editingPlan, {
-        price: parseInt(editForm.price),
-        durationInMonths: editForm.durationInMonths,
-        features: editForm.features.split(",").map((f) => f.trim()),
-      });
+  price: Number(editForm.price),
+  durationInMonths: Number(editForm.durationInMonths),
+  dailyCheckinLimit: Number(editForm.dailyCheckinLimit),
+  features: editForm.features
+    .split(",")
+    .map((f) => f.trim()),
+});
       setEditingPlan(null);
       fetchPlans();
     } catch (error) {
@@ -92,13 +98,14 @@ export default function ManagePlans() {
     }
     try {
       await createPlan({
-        name: newPlan.name,
-        price: parseInt(newPlan.price),
-        durationInMonths: newPlan.durationInMonths,
-        features: newPlan.features
-          ? newPlan.features.split(",").map((f) => f.trim())
-          : [],
-      });
+  name: newPlan.name,
+  price: Number(newPlan.price),
+  durationInMonths: Number(newPlan.durationInMonths),
+  dailyCheckinLimit: Number(newPlan.dailyCheckinLimit),
+  features: newPlan.features
+    ? newPlan.features.split(",").map((f) => f.trim())
+    : [],
+});
       setNewPlan({ name: "", price: "", durationInMonths: "", features: "" });
       fetchPlans();
     } catch (error) {
@@ -107,38 +114,50 @@ export default function ManagePlans() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Manage Membership Plans</h1>
+    <div className="p-3 md:p-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4">Manage Membership Plans</h1>
       <p className="mb-6 text-gray-600">
         Here you can add, update, or remove plans for members.
       </p>
 
       {/* Add New Plan Section */}
-      <div className="mb-6 bg-gray-100 p-4 rounded-lg">
+      <div className="mb-6 bg-white p-4 md:p-6 rounded-2xl shadow">
         <h2 className="text-xl font-bold mb-2">Add New Plan</h2>
         <input
           type="text"
-          className="border p-2 w-full mb-2"
+          className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Plan Name"
           value={newPlan.name}
           onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
         />
         <input
           type="number"
-          className="border p-2 w-full mb-2"
+          className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Price"
           value={newPlan.price}
           onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
         />
         <input
           type="text"
-          className="border p-2 w-full mb-2"
-          placeholder="durationInMonths (e.g. 1 month)"
+          className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="durationInMonths"
           value={newPlan.durationInMonths}
           onChange={(e) => setNewPlan({ ...newPlan, durationInMonths: e.target.value })}
         />
+        <input
+  type="number"
+  className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  placeholder="Daily Check-in Limit (-1 for Unlimited)"
+  value={newPlan.dailyCheckinLimit}
+  onChange={(e) =>
+    setNewPlan({
+      ...newPlan,
+      dailyCheckinLimit: e.target.value,
+    })
+  }
+/>
         <textarea
-          className="border p-2 w-full mb-2"
+          className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Features (comma separated)"
           value={newPlan.features}
           onChange={(e) => setNewPlan({ ...newPlan, features: e.target.value })}
@@ -157,21 +176,21 @@ export default function ManagePlans() {
           <h2 className="text-xl font-bold mb-2">Edit Plan</h2>
           <input
             type="text"
-            className="border p-2 w-full mb-2"
+            className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Plan Name"
             value={editForm.name}
             readOnly
           />
           <input
             type="number"
-            className="border p-2 w-full mb-2"
+            className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Price"
             value={editForm.price}
             onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
           />
           <input
             type="text"
-            className="border p-2 w-full mb-2"
+            className="border rounded-xl p-3 w-full mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="durationInMonths"
             value={editForm.durationInMonths}
             onChange={(e) =>

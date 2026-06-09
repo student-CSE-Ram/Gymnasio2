@@ -141,25 +141,17 @@ exports.getMyPlans = async (req, res) => {
       if (!plan) return null;
 
       return {
-
-        _id: membership._id,
-
-        planId: plan._id,
-
-        name: plan.name,
-
-        price: plan.price,
-
-        duration: plan.durationInMonths,
-
-        start: membership.startDate,
-
-        end: membership.endDate,
-
-        status: membership.status,
-
-        paymentStatus: membership.paymentStatus
-      };
+  _id: membership._id,
+  planId: plan._id,
+  name: plan.name,
+  price: plan.price,
+  duration: plan.durationInMonths,
+  dailyCheckinLimit:plan.dailyCheckinLimit,
+  start: membership.startDate,
+  end: membership.endDate,
+  status: membership.status,
+  paymentStatus: membership.paymentStatus
+};
     }).filter(Boolean);
 
     return res.status(200).json({

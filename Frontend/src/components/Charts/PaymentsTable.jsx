@@ -23,29 +23,94 @@ const fetchPayments = async () => {
   if (loading) return <p>Loading recent payments...</p>;
   if (!payments.length) return <p>No payments yet.</p>;
 
-  return (
-    <div className="bg-white p-4 rounded-xl shadow-md mt-6">
-      <h2 className="text-lg font-bold mb-4">Recent Payments</h2>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="p-2">Member</th>
-            <th className="p-2">Plan</th>
-            <th className="p-2">Amount</th>
-            <th className="p-2">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {payments.map((payment) => (
-            <tr key={payment.paymentId} className="border-t">
-              <td className="p-2">{payment.member}</td>
-              <td className="p-2">{payment.plan}</td>
-              <td className="p-2">{payment.amount}</td>
-              <td className="p-2">{new Date(payment.date).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+return (
+  <div className="bg-white rounded-2xl shadow-md mt-6 overflow-hidden">
+
+    <div className="px-6 py-4 border-b bg-gray-50">
+      <h2 className="text-xl font-bold">
+        Recent Payments
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-1">
+        Latest membership purchases
+      </p>
     </div>
-  );
+
+    <div className="overflow-x-auto">
+
+      <table className="w-full min-w-[700px]">
+
+        <thead className="bg-gray-100">
+
+          <tr>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Member
+            </th>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Plan
+            </th>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Amount
+            </th>
+
+            <th className="px-6 py-4 text-left font-semibold">
+              Date
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {payments.map((payment) => (
+
+            <tr
+              key={payment.paymentId}
+              className="
+                border-t
+                hover:bg-gray-50
+                transition
+              "
+            >
+
+              <td className="px-6 py-4 font-medium">
+                {payment.member}
+              </td>
+
+              <td className="px-6 py-4">
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                  {payment.plan}
+                </span>
+              </td>
+
+              <td className="px-6 py-4">
+
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
+                  ₹{payment.amount}
+                </span>
+
+              </td>
+
+              <td className="px-6 py-4 text-gray-600">
+                {new Date(
+                  payment.date
+                ).toLocaleDateString()}
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+);
 }

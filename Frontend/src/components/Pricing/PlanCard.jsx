@@ -11,14 +11,58 @@ export default function PlanCard({
 }) {
   return (
     <div className="bg-gradient-to-br from-fuchsia-100 to-fuchsia-200 p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 ease-in-out flex flex-col relative">
-      <h2 className="text-2xl font-bold mb-4">{plan.name}</h2>
+     <div className="mb-6">
 
-      <p className="text-4xl font-semibold mb-4">
-        ₹{plan.price}
-        {/* <span className="text-lg font-normal"></span> */}
-      </p>
+  <h2 className="text-3xl font-bold">
+    {plan.name}
+  </h2>
 
-      <ul className="mb-6 space-y-4 py-6 text-gray-700 flex-1">
+  <p className="text-5xl font-extrabold mt-3">
+    ₹{plan.price}
+  </p>
+
+</div>
+<div className="grid grid-cols-2 gap-3 mb-6">
+
+  <div className="bg-white/60 rounded-xl p-3 text-center">
+
+    <p className="text-xs text-gray-500 uppercase">
+      Duration
+    </p>
+
+    <p className="font-bold text-lg">
+      {plan.durationInMonths}
+    </p>
+
+    <p className="text-xs text-gray-500">
+      Months
+    </p>
+
+  </div>
+
+  <div className="bg-white/60 rounded-xl p-3 text-center">
+
+    <p className="text-xs text-gray-500 uppercase">
+      Check-ins
+    </p>
+
+    <p className="font-bold text-lg">
+
+      {plan.dailyCheckinLimit === -1
+        ? "∞"
+        : plan.dailyCheckinLimit}
+
+    </p>
+
+    <p className="text-xs text-gray-500">
+      Per Day
+    </p>
+
+  </div>
+
+</div>
+
+      <ul className="mb-6 space-y-3 py-4 text-gray-700 flex-1 border-t border-white/50">
         {plan.features.map((f, idx) => (
           <li key={idx} className="flex items-center space-x-2">
             <CheckCircleIcon className="h-5 w-5 text-green-500" />
