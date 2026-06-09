@@ -50,7 +50,10 @@ const menuConfig = {
   ],
 };
 
-export default function Sidebar({ role }) {
+export default function Sidebar({
+  role,
+  setSidebarOpen
+}) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -88,15 +91,25 @@ export default function Sidebar({ role }) {
           const isActive = location.pathname.startsWith(fullPath);
 
           return (
-            <Link
-              key={index}
-              to={fullPath}
-              className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
-                isActive
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700"
-              }`}
-            >
+           <Link
+  key={index}
+  to={fullPath}
+  onClick={() => {
+
+    if (
+      window.innerWidth < 1024 &&
+      setSidebarOpen
+    ) {
+      setSidebarOpen(false);
+    }
+
+  }}
+  className={`flex items-center space-x-3 p-3 rounded-xl transition-all ${
+    isActive
+      ? "bg-gray-700 text-white"
+      : "hover:bg-gray-700"
+  }`}
+>
               {item.icon}
               <span className="font-medium">
   {item.name}

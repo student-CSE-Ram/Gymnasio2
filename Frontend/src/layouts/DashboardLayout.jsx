@@ -107,7 +107,10 @@ const fetchAttendanceStats =
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-[#111827] text-gray-200 font-semibold p-4">
-        <Sidebar role={context.role} />
+        <Sidebar
+  role={context.role}
+  setSidebarOpen={setSidebarOpen}
+/>
       </aside>
       {sidebarOpen && (
   <div className="fixed inset-0 z-50 lg:hidden">
@@ -119,8 +122,10 @@ const fetchAttendanceStats =
 
     <div className="absolute left-0 top-0 h-full w-64 bg-[#111827]">
 
-      <Sidebar role={context.role} />
-
+     <Sidebar
+  role={context.role}
+  setSidebarOpen={setSidebarOpen}
+/>
     </div>
 
   </div>
@@ -133,7 +138,7 @@ const fetchAttendanceStats =
 <div className="flex items-center gap-4">
 
   <button
-    onClick={() => setSidebarOpen(true)}
+    onClick={() => setSidebarOpen(prev => !prev)}
     className="lg:hidden"
   >
     <Menu size={28} />
